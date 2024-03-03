@@ -20,11 +20,6 @@ const blocks = computed(() => project.value.blocks)
 const addingBlock = ref(false)
 const editingBlock = ref(null)
 
-// b4.options = {
-//   interval: '1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo'.split(', '),
-//   period: '1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max'.split(', ')
-// }
-
 const dragging = ref(new Set())
 function draggingBlock(block) {
   dragging.value.add(block)

@@ -24,7 +24,7 @@ export const INPUT_TYPES = [
 ]
 
 // basiclly the HTML input type
-export const OUTPUT_TYPES = ['string', 'text', ...INPUT_TYPES, 'select']
+export const OUTPUT_TYPES = ['func_return', 'string', 'text', ...INPUT_TYPES, 'select']
 
 export default class OutputConfig {
   constructor() {

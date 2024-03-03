@@ -5,8 +5,8 @@ export default class Block extends Base {
     super()
     this.title = 'Block Name'
     this.args = ['arg0', 'arg1']
-    this.outputs = ['output']
-    this.outputConfig = []
+
+    this.outputs = []
 
     this.position = [0, 0]
 
@@ -21,7 +21,6 @@ export default class Block extends Base {
 
   delOutput(idx) {
     this.outputs.splice(idx, 1)
-    this.outputConfig.splice(idx, 1)
   }
 
   delOutputOption(outputIdx, optIdx) {

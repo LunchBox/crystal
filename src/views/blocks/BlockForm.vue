@@ -70,19 +70,14 @@ function onSubmit() {
       <div>
         <label>Outputs</label>
         <div v-for="(arg, outputIdx) in formData.outputs">
-          <input v-if="typeof arg === 'string'" type="text" v-model="formData.outputs[idx]" />
-
-          <template v-else>
-            <input type="text" v-model="formData.outputs[outputIdx].label" />
-            <select v-model="formData.outputs[outputIdx].type">
-              <option></option>
-              <option v-for="tp in OUTPUT_TYPES">{{ tp }}</option>
-            </select>
-          </template>
+          <input type="text" v-model="formData.outputs[outputIdx].label" />
+          <select v-model="formData.outputs[outputIdx].type">
+            <option v-for="tp in OUTPUT_TYPES">{{ tp }}</option>
+          </select>
 
           <button @click.prevent="delOutput(outputIdx)">X</button>
 
-          <div v-if="typeof arg === 'object' && arg.type === 'select'">
+          <div v-if="arg.type === 'select'">
             <div v-for="(opt, optIdx) in formData.outputs[outputIdx].options">
               <input type="text" v-model="formData.outputs[outputIdx].options[optIdx]" />
               <button @click.prevent="delOutputOption(outputIdx, optIdx)">X</button>

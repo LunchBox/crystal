@@ -3,6 +3,16 @@ import { defineStore } from 'pinia'
 
 import Project from '@/models/project.js'
 
+function applyAttrs(obj, attrs) {
+  Object.keys(attrs).forEach((k) => {
+    if (attrs[k] && typeof attrs[k] === 'object') {
+      applyAttrs(obj[k], attrs[k])
+    } else {
+      obj[k] = attrs[k]
+    }
+  })
+}
+
 export const useProjectStore = defineStore('project', () => {
   const project = ref(null)
 
@@ -17,7 +27,8 @@ export const useProjectStore = defineStore('project', () => {
     const ext = project.value.blocks.find((b) => b.id === id)
     if (ext) {
       const { id: _, ...attrs } = block
-      Object.assign(ext, attrs)
+      // Object.assign(ext, attrs)
+      applyAttrs(ext, attrs)
     }
   }
 

@@ -33,34 +33,27 @@ const bStyle = computed(() => {
       </div>
       <div class="block-outputs">
         <div class="block-output" v-for="output in block.outputs" :key="output">
-          <span v-if="typeof output === 'string'">{{ output }}</span>
-          <template v-else>
-            <span>{{ output.label }}</span>
+          <span>{{ output.label }}</span>
 
-            <input
-              v-if="output.type === 'string'"
-              type="text"
-              v-model="block.values[output.label]"
-            />
+          <input v-if="output.type === 'string'" type="text" v-model="block.values[output.label]" />
 
-            <input
-              v-else-if="INPUT_TYPES.includes(output.type)"
-              :type="output.type"
-              v-model="block.values[output.label]"
-            />
+          <input
+            v-else-if="INPUT_TYPES.includes(output.type)"
+            :type="output.type"
+            v-model="block.values[output.label]"
+          />
 
-            <textarea
-              v-else-if="output.type === 'text'"
-              type="text"
-              v-model="block.values[output.label]"
-            >
-            </textarea>
+          <textarea
+            v-else-if="output.type === 'text'"
+            type="text"
+            v-model="block.values[output.label]"
+          >
+          </textarea>
 
-            <select v-else-if="output.type === 'select'" v-model="block.values[output.label]">
-              <option></option>
-              <option v-for="opt in output.options" :value="opt">{{ opt }}</option>
-            </select>
-          </template>
+          <select v-else-if="output.type === 'select'" v-model="block.values[output.label]">
+            <option></option>
+            <option v-for="opt in output.options" :value="opt">{{ opt }}</option>
+          </select>
 
           <span class="indicator input"></span>
         </div>
