@@ -41,5 +41,22 @@ export const useProjectStore = defineStore('project', () => {
 
   watch(project, save, { deep: true })
 
-  return { project, addBlock, updateBlock, save }
+  const selectedInput = ref(null)
+  const selectedOutput = ref(null)
+
+  function connectIO() {
+    if (
+      selectedInput.value &&
+      selectedOutput.value &&
+      selectedInput.value[0] !== selectedOutput.value[0] //TODO: not allow to connect the same block output to input?
+    ) {
+      const [block, arg] = selectedInput.value
+      block.setArg(arg, ...selectedOutput.value)
+      console.log(block)
+      selectedInput.value = null
+      selectedOutput.value = null
+    }
+  }
+
+  return { project, addBlock, updateBlock, save, selectedInput, selectedOutput, connectIO }
 })

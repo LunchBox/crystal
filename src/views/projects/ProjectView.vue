@@ -13,7 +13,7 @@ import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
 
 const store = useProjectStore()
-const { project } = storeToRefs(store)
+const { project, selectedInput, selectedOutput } = storeToRefs(store)
 
 const blocks = computed(() => project.value.blocks)
 

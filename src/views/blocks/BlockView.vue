@@ -2,9 +2,47 @@
 import { computed } from 'vue'
 import { INPUT_TYPES } from '@/models/block_output.js'
 
+import { storeToRefs } from 'pinia'
+import { useProjectStore } from '@/stores/project.js'
+
+const store = useProjectStore()
+const { selectedInput, selectedOutput } = storeToRefs(store)
+const { connectIO } = store
+
 const props = defineProps(['block'])
 
 defineEmits(['edit', 'dragging'])
+
+function clearArg(arg) {
+  props.block.argsMap[arg] = null
+}
+
+function mousedownInput(arg) {
+  if (selectedInput.value) {
+    const [block, _arg] = selectedInput.value
+    if (block === props.block && arg === _arg) {
+      selectedInput.value = null
+    } else {
+      selectedInput.value = [props.block, arg]
+    }
+  } else {
+    selectedInput.value = [props.block, arg]
+    connectIO()
+  }
+}
+function mousedownOutput(label) {
+  if (selectedOutput.value) {
+    const [block, _label] = selectedOutput.value
+    if (block === props.block && label === _label) {
+      selectedOutput.value = null
+    } else {
+      selectedOutput.value = [props.block, label]
+    }
+  } else {
+    selectedOutput.value = [props.block, label]
+    connectIO()
+  }
+}
 
 const bStyle = computed(() => {
   const [x = 0, y = 0] = props.block.position
@@ -13,6 +51,22 @@ const bStyle = computed(() => {
     top: `${y}px`
   }
 })
+
+function isArgSelected(arg) {
+  if (!selectedInput.value) return false
+  const [block, _arg] = selectedInput.value
+  return block === props.block && arg === _arg
+}
+
+function isOutputSelected(label) {
+  if (!selectedOutput.value) return false
+  const [block, _label] = selectedOutput.value
+  return block === props.block && label === _label
+}
+
+function isOccupied(arg) {
+  return props.block.argsMap[arg]
+}
 </script>
 
 <template>
@@ -27,7 +81,13 @@ const bStyle = computed(() => {
     <div class="block-content">
       <div class="block-inputs">
         <div class="block-input" v-for="arg in block.args" :key="arg">
-          <span class="indicator input"></span>
+          <span
+            class="indicator input"
+            :class="{ active: isArgSelected(arg), occupied: isOccupied(arg) }"
+            :title="block.argsMap[arg]"
+            @mousedown.prevent="mousedownInput(arg)"
+            @dblclick.prevent="clearArg(arg)"
+          ></span>
           <span>{{ arg }}</span>
         </div>
       </div>
@@ -55,7 +115,11 @@ const bStyle = computed(() => {
             <option v-for="opt in output.options" :value="opt">{{ opt }}</option>
           </select>
 
-          <span class="indicator input"></span>
+          <span
+            class="indicator output"
+            :class="{ active: isOutputSelected(output.label) }"
+            @mousedown.prevent="mousedownOutput(output.label)"
+          ></span>
         </div>
       </div>
     </div>
@@ -95,6 +159,14 @@ const bStyle = computed(() => {
   display: block;
   width: 1rem;
   height: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid gray;
+}
+
+.indicator.occupied {
+  background: gray;
+}
+
+.indicator.active {
+  background: orange;
 }
 </style>

@@ -5,6 +5,7 @@ export default class Block extends Base {
     super()
     this.title = 'Block Name'
     this.args = ['arg0', 'arg1']
+    this.argsMap = {}
 
     this.outputs = []
 
@@ -13,6 +14,10 @@ export default class Block extends Base {
     this.values = {}
 
     this.code = null
+  }
+
+  setArg(arg, block, outputLabel) {
+    this.argsMap[arg] = [block.id, outputLabel].join('_')
   }
 
   delArg(idx) {

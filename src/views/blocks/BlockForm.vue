@@ -70,7 +70,7 @@ function onSubmit() {
       <div>
         <label>Outputs</label>
         <div v-for="(arg, outputIdx) in formData.outputs">
-          <input type="text" v-model="formData.outputs[outputIdx].label" />
+          <input type="text" v-model="formData.outputs[outputIdx].label" required />
           <select v-model="formData.outputs[outputIdx].type">
             <option v-for="tp in OUTPUT_TYPES">{{ tp }}</option>
           </select>
