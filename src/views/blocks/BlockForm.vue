@@ -1,6 +1,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 import Block from '@/models/block.js'
+import BlockOutput from '@/models/block_output.js'
+import { OUTPUT_TYPES } from '@/models/block_output.js'
 
 import { useProjectStore } from '@/stores/project.js'
 
@@ -22,15 +24,23 @@ function addArg() {
 }
 
 function delArg(idx) {
-  formData.value.args.splice(idx, 1)
+  formData.value.delArg(idx)
 }
 
 function addOutput() {
-  formData.value.outputs.push('output')
+  formData.value.outputs.push(new BlockOutput())
 }
 
 function delOutput(idx) {
-  formData.value.outputs.splice(idx, 1)
+  formData.value.delOutput(idx)
+}
+
+function addOutputOption(outputIdx) {
+  formData.value.outputs[outputIdx].options.push('')
+}
+
+function delOutputOption(outputIdx, optIdx) {
+  formData.value.delOutputOption(outputIdx, optIdx)
 }
 
 function onSubmit() {
@@ -59,9 +69,26 @@ function onSubmit() {
 
       <div>
         <label>Outputs</label>
-        <div v-for="(arg, idx) in formData.outputs">
-          <input type="text" v-model="formData.outputs[idx]" />
-          <button @click.prevent="delOutput(idx)">X</button>
+        <div v-for="(arg, outputIdx) in formData.outputs">
+          <input v-if="typeof arg === 'string'" type="text" v-model="formData.outputs[idx]" />
+
+          <template v-else>
+            <input type="text" v-model="formData.outputs[outputIdx].label" />
+            <select v-model="formData.outputs[outputIdx].type">
+              <option></option>
+              <option v-for="tp in OUTPUT_TYPES">{{ tp }}</option>
+            </select>
+          </template>
+
+          <button @click.prevent="delOutput(outputIdx)">X</button>
+
+          <div v-if="typeof arg === 'object' && arg.type === 'select'">
+            <div v-for="(opt, optIdx) in formData.outputs[outputIdx].options">
+              <input type="text" v-model="formData.outputs[outputIdx].options[optIdx]" />
+              <button @click.prevent="delOutputOption(outputIdx, optIdx)">X</button>
+            </div>
+            <button @click.prevent="addOutputOption(outputIdx)">Add Option</button>
+          </div>
         </div>
         <button @click.prevent="addOutput">Add Output</button>
       </div>

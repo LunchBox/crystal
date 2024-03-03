@@ -6,11 +6,25 @@ export default class Block extends Base {
     this.title = 'Block Name'
     this.args = ['arg0', 'arg1']
     this.outputs = ['output']
+    this.outputConfig = []
 
     this.position = [0, 0]
 
-    this.options = {}
+    this.values = {}
 
     this.code = null
+  }
+
+  delArg(idx) {
+    this.args.splice(idx, 1)
+  }
+
+  delOutput(idx) {
+    this.outputs.splice(idx, 1)
+    this.outputConfig.splice(idx, 1)
+  }
+
+  delOutputOption(outputIdx, optIdx) {
+    this.outputs[outputIdx].options.splice(optIdx, 1)
   }
 }

@@ -20,67 +20,10 @@ const blocks = computed(() => project.value.blocks)
 const addingBlock = ref(false)
 const editingBlock = ref(null)
 
-// const b1 = new Block()
-// b1.position = [100, 100]
-
-// const b2 = new NumberBlock()
-// b2.position = [300, 100]
-
-// const b3 = new Block()
-// b3.position = [600, 100]
-// b3.title = 'yf.download'
-// b3.args = [
-//   'tickers',
-//   'interval',
-//   'period',
-//   'start',
-//   'end',
-//   'prepost',
-//   'actions',
-//   'auto_adjust',
-//   'back_adjust',
-//   'repair',
-//   'keepna',
-//   'rounding',
-//   'group_by',
-//   'ignore_tz',
-//   'threads',
-//   'proxy',
-//   'session',
-//   'timeout',
-//   'progress'
-// ]
-
-// const b4 = new Block()
-// b4.position = [800, 100]
-// b4.title = 'yf.download'
-// b4.args = [
-//   'tickers',
-//   'interval',
-//   'period',
-//   'start',
-//   'end',
-//   'prepost',
-//   'actions',
-//   'auto_adjust',
-//   'back_adjust',
-//   'repair',
-//   'keepna',
-//   'rounding',
-//   'group_by',
-//   'ignore_tz',
-//   'threads',
-//   'proxy',
-//   'session',
-//   'timeout',
-//   'progress'
-// ]
 // b4.options = {
 //   interval: '1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo'.split(', '),
 //   period: '1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max'.split(', ')
 // }
-
-// const blocks = ref([b1, b2, b3, b4])
 
 const dragging = ref(new Set())
 function draggingBlock(block) {

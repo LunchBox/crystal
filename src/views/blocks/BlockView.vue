@@ -1,5 +1,7 @@
 <script setup>
 import { computed } from 'vue'
+import { INPUT_TYPES } from '@/models/block_output.js'
+
 const props = defineProps(['block'])
 
 defineEmits(['edit', 'dragging'])
@@ -25,17 +27,42 @@ const bStyle = computed(() => {
     <div class="block-content">
       <div class="block-inputs">
         <div class="block-input" v-for="arg in block.args" :key="arg">
+          <span class="indicator input"></span>
           <span>{{ arg }}</span>
-          <div v-if="block.options[arg]">
-            <select name="" id="">
-              <option v-for="opt in block.options[arg]" :value="opt">{{ opt }}</option>
-            </select>
-          </div>
         </div>
       </div>
       <div class="block-outputs">
         <div class="block-output" v-for="output in block.outputs" :key="output">
-          <span>{{ output }}</span>
+          <span v-if="typeof output === 'string'">{{ output }}</span>
+          <template v-else>
+            <span>{{ output.label }}</span>
+
+            <input
+              v-if="output.type === 'string'"
+              type="text"
+              v-model="block.values[output.label]"
+            />
+
+            <input
+              v-else-if="INPUT_TYPES.includes(output.type)"
+              :type="output.type"
+              v-model="block.values[output.label]"
+            />
+
+            <textarea
+              v-else-if="output.type === 'text'"
+              type="text"
+              v-model="block.values[output.label]"
+            >
+            </textarea>
+
+            <select v-else-if="output.type === 'select'" v-model="block.values[output.label]">
+              <option></option>
+              <option v-for="opt in output.options" :value="opt">{{ opt }}</option>
+            </select>
+          </template>
+
+          <span class="indicator input"></span>
         </div>
       </div>
     </div>
@@ -60,12 +87,21 @@ const bStyle = computed(() => {
 
 .block-input,
 .block-output {
-  padding: 0 0.25rem;
   display: flex;
+  align-items: center;
   gap: 0 0.25rem;
+  padding: 1px 0.25rem;
 }
 
 .block-output {
   text-align: right;
+  justify-content: flex-end;
+}
+
+.indicator {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid #ccc;
 }
 </style>
