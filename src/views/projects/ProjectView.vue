@@ -13,7 +13,7 @@ import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
 
 const store = useProjectStore()
-const { project, selectedInput, selectedOutput } = storeToRefs(store)
+const { project, selectedInput, selectedOutput, ioPairs, elPositions } = storeToRefs(store)
 
 const blocks = computed(() => project.value.blocks)
 
@@ -50,6 +50,23 @@ onBeforeUnmount(() => {
   document.removeEventListener('mousemove', mousemove)
   document.removeEventListener('mouseup', mouseup)
 })
+
+// console.log(ioPairs.value)
+// onMounted(() => {
+//   console.log(elPositions.value)
+// })
+
+function curve(pair) {
+  const [output, input] = pair
+
+  if (!elPositions.value[output]) return
+  if (!elPositions.value[input]) return
+
+  let { x: x1, y: y1 } = elPositions.value[output]
+  let { x: x2, y: y2 } = elPositions.value[input]
+
+  return `M ${x1} ${y1}, C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`
+}
 </script>
 
 <template>
@@ -60,7 +77,7 @@ onBeforeUnmount(() => {
     <a href="" class="btn">Run</a>
     <a href="" class="btn">Run Block</a>
   </div>
-  <div>
+  <div style="position: absolute; z-index: 2">
     <AddBlock
       v-if="addingBlock"
       @cancel="addingBlock = false"
@@ -75,6 +92,12 @@ onBeforeUnmount(() => {
     ></EditBlock>
   </div>
   <div class="block-wrapper">
+    <svg xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(8, 8)" stroke-width="1.5" stroke="#999" fill="transparent">
+        <path v-for="pair in ioPairs" :d="curve(pair)" />
+      </g>
+    </svg>
+
     <BlockView
       v-for="block in blocks"
       :block="block"
@@ -87,6 +110,19 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+svg {
+  z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0;
+}
 .block-wrapper {
   position: relative;
 }

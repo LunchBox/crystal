@@ -1,12 +1,12 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { INPUT_TYPES } from '@/models/block_output.js'
 
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { selectedInput, selectedOutput } = storeToRefs(store)
+const { selectedInput, selectedOutput, elPositions } = storeToRefs(store)
 const { connectIO } = store
 
 const props = defineProps(['block'])
@@ -67,10 +67,44 @@ function isOutputSelected(label) {
 function isOccupied(arg) {
   return props.block.argsMap[arg]
 }
+
+const blockRef = ref(null)
+const elRefs = ref({})
+
+function updatePositions() {
+  Object.entries(elRefs.value).forEach(([id, el]) => {
+    const rect = el.getBoundingClientRect()
+    elPositions.value[id] = rect
+  })
+}
+
+onMounted(() => {
+  updatePositions()
+
+  window.addEventListener('resize', updatePositions)
+
+  const config = { attributes: true, childList: true, subtree: true }
+  const callback = function (mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        console.log('A child node has been added or removed.')
+      } else if (mutation.type === 'attributes') {
+        console.log('A ' + mutation.attributeName + ' attribute was modified.')
+        updatePositions()
+      }
+    }
+  }
+  const observer = new MutationObserver(callback)
+  observer.observe(blockRef.value, config)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updatePositions)
+})
 </script>
 
 <template>
-  <div class="block" :style="bStyle">
+  <div class="block" :style="bStyle" ref="blockRef">
     <div
       class="block-title"
       @dblclick.prevent="$emit('edit', block)"
@@ -82,6 +116,7 @@ function isOccupied(arg) {
       <div class="block-inputs">
         <div class="block-input" v-for="arg in block.args" :key="arg">
           <span
+            :ref="(el) => (elRefs[`${block.id}_${arg}_i`] = el)"
             class="indicator input"
             :class="{ active: isArgSelected(arg), occupied: isOccupied(arg) }"
             :title="block.argsMap[arg]"
@@ -116,6 +151,7 @@ function isOccupied(arg) {
           </select>
 
           <span
+            :ref="(el) => (elRefs[`${block.id}_${output.label}_o`] = el)"
             class="indicator output"
             :class="{ active: isOutputSelected(output.label) }"
             @mousedown.prevent="mousedownOutput(output.label)"

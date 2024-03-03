@@ -58,5 +58,30 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
-  return { project, addBlock, updateBlock, save, selectedInput, selectedOutput, connectIO }
+  const elPositions = ref({})
+
+  const ioPairs = computed(() => {
+    const blocks = project.value.blocks
+    const idPairs = blocks
+      .map((b) => {
+        return Object.entries(b.argsMap).map(([arg, target]) => {
+          return [`${target}_o`, `${b.id}_${arg}_i`]
+        })
+      })
+      .flat()
+
+    return idPairs
+  })
+
+  return {
+    project,
+    addBlock,
+    updateBlock,
+    save,
+    selectedInput,
+    selectedOutput,
+    connectIO,
+    elPositions,
+    ioPairs
+  }
 })
