@@ -46,16 +46,21 @@ export const useProjectStore = defineStore('project', () => {
     project.value.blocks.push(block)
   }
 
+  function clearOutputRefs(block) {
+    if (!block._outputs) return
+    block._outputs.forEach((ob) => {
+      ob.inputs.forEach((inp) => {
+        if (inp.source.startsWith(block.id)) {
+          inp.source = null
+        }
+      })
+    })
+  }
+
   function delBlock(block) {
     const idx = blocks.value.indexOf(block)
     if (idx > -1) {
-      block._outputs.forEach((ob) => {
-        ob.inputs.forEach((inp) => {
-          if (inp.source.startsWith(block.id)) {
-            inp.source = null
-          }
-        })
-      })
+      clearOutputRefs(block)
       blocks.value.splice(idx, 1)
     }
   }
