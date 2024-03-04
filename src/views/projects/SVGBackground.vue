@@ -3,7 +3,9 @@ import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { elPositions, canvasOffset, ioPairs } = storeToRefs(store)
+const { elPositions, canvasOffset, canvasScale, ioPairs } = storeToRefs(store)
+
+console.log(canvasScale.value)
 
 function curve(pair) {
   const [output, input] = pair
@@ -24,41 +26,13 @@ function curve(pair) {
 </script>
 <template>
   <svg xmlns="http://www.w3.org/2000/svg">
-    <defs data-v-2be30919="">
-      <pattern
-        id="smallGrid"
-        width="12"
-        height="12"
-        patternUnits="userSpaceOnUse"
-        data-v-2be30919=""
-      >
-        <path
-          d="M 12 0 L 0 0 0 12"
-          fill="none"
-          stroke="#eee"
-          stroke-width="0.5"
-          data-v-2be30919=""
-        ></path>
-      </pattern>
-      <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse" data-v-2be30919="">
-        <rect width="48" height="48" fill="url(#smallGrid)" data-v-2be30919=""></rect>
-        <path
-          d="M 48 0 L 0 0 0 48"
-          fill="none"
-          stroke="#999"
-          stroke-width="0.5"
-          data-v-2be30919=""
-        ></path>
-      </pattern>
-    </defs>
-
-    <g :transform="`translate(${canvasOffset[0]}, ${canvasOffset[1]})`">
+    <g :transform="`translate(${canvasOffset[0]}, ${canvasOffset[1]}) scale(${canvasScale}) `">
       <rect
         width="100%"
         height="100%"
-        fill="url(#grid)"
+        fill="transparent"
+        stroke="#ccc"
         transform="translate(0, 0)"
-        data-v-2be30919=""
       ></rect>
       <g transform="translate(8, 8)" stroke-width="1.5" stroke="#999" fill="transparent">
         <path v-for="pair in ioPairs" :d="curve(pair)" />

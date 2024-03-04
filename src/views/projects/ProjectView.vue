@@ -17,8 +17,15 @@ import EditBlock from '../blocks/EditBlock.vue'
 import SVGBackground from './SVGBackground.vue'
 
 const store = useProjectStore()
-const { canvasOffset, project, selectedInput, selectedOutput, elPositions, selectedBlocks } =
-  storeToRefs(store)
+const {
+  canvasOffset,
+  canvasScale,
+  project,
+  selectedInput,
+  selectedOutput,
+  elPositions,
+  selectedBlocks
+} = storeToRefs(store)
 const { addBlock, delBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks } = store
 
 const blocks = computed(() => project.value.blocks)
@@ -32,6 +39,24 @@ function deleteBlocks() {
     bs.forEach(delBlock)
     clearSelectedBlocks()
   }
+}
+
+function resetCanvas() {
+  canvasScale.value = 1
+  canvasOffset.value = [0, 0]
+}
+
+// ---- scale
+
+function onWheel(e) {
+  // deltaY is always 100/-100 in Windows, but less then 10 in Mac
+  let unit = 0.01
+  if (Math.abs(e.deltaY) >= 100) {
+    unit = unit / 10
+  }
+
+  const delta = e.deltaY * unit
+  canvasScale.value += delta
 }
 
 // ---- dragging related
@@ -48,7 +73,8 @@ const canvasStyle = computed(() => {
   const [x, y] = canvasOffset.value
   return {
     top: y + 'px',
-    left: x + 'px'
+    left: x + 'px',
+    transform: `scale(${canvasScale.value}, ${canvasScale.value})`
   }
 })
 
@@ -107,12 +133,13 @@ function cloneSelections() {
 }
 
 function moveSelections(e) {
+  const scale = canvasScale.value
   const blocks = [...selectedBlocks.value]
   blocks.forEach((block) => {
     const pos = block.position
     if (pos) {
-      pos[0] += e.movementX
-      pos[1] += e.movementY
+      pos[0] += e.movementX / scale
+      pos[1] += e.movementY / scale
     }
   })
 }
@@ -150,12 +177,14 @@ function selectBlocksInRange() {
 
   const [x1, y1] = startPos.value
   const [x2, y2] = currentPos.value
-  const [ox, oy] = canvasOffset.value
 
-  const mx = Math.min(x1, x2) - ox
-  const my = Math.min(y1, y2) - oy
-  const mw = Math.abs(x1 - x2)
-  const mh = Math.abs(y1 - y2)
+  const [ox, oy] = canvasOffset.value
+  const scale = canvasScale.value
+
+  const mx = (Math.min(x1, x2) - ox) / scale
+  const my = (Math.min(y1, y2) - oy) / scale
+  const mw = Math.abs(x1 - x2) / scale
+  const mh = Math.abs(y1 - y2) / scale
 
   const inRangeBlocks = blocks.value.filter((b) => {
     const rect = elPositions.value[b.id]
@@ -191,23 +220,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('mouseup', mouseup)
 })
 
-// function curve(pair) {
-//   const [output, input] = pair
-
-//   if (!elPositions.value[output]) return
-//   if (!elPositions.value[input]) return
-
-//   const [ox, oy] = canvasOffset.value
-
-//   let { x: x1, y: y1 } = elPositions.value[output]
-//   let { x: x2, y: y2 } = elPositions.value[input]
-
-//   const md1 = Math.max((x1 + x2) / 2, x1 + Math.abs(y1 - y2))
-//   const md2 = Math.min((x1 + x2) / 2, x2 - Math.abs(y1 - y2))
-
-//   return `M ${x1} ${y1}, C ${md1} ${y1}, ${md2} ${y2}, ${x2} ${y2}`
-// }
-
 function run() {
   blocks.value.forEach((b) => {
     console.log(b.toCode())
@@ -223,6 +235,7 @@ function run() {
     <a href="#" class="btn" @click.prevent="deleteBlocks">Del Blocks</a>
     <a href="" class="btn" @click.prevent="run">Run</a>
     <a href="" class="btn" @click.prevent="run">Run Block</a>
+    <a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
   </div>
   <div style="position: absolute; z-index: 2">
     <AddBlock
@@ -238,10 +251,10 @@ function run() {
       @success="editingBlock = null"
     ></EditBlock>
   </div>
-  <div class="canvas-outer" @contextmenu.prevent>
-    <div class="block-wrapper" :style="canvasStyle">
-      <SVGBackground></SVGBackground>
 
+  <div class="canvas-outer" @contextmenu.prevent @wheel="onWheel">
+    <SVGBackground></SVGBackground>
+    <div class="block-wrapper" :style="canvasStyle">
       <BlockView
         v-for="block in blocks"
         :block="block"
@@ -277,6 +290,7 @@ svg {
 }
 
 .block-wrapper {
+  transform-origin: top left;
   font-size: 0.75rem;
   position: absolute;
   top: 0;

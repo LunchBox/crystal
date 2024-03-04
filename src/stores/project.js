@@ -15,7 +15,19 @@ export const useProjectStore = defineStore('project', () => {
     Object.fromEntries(blocks.value.filter((b) => b.msgId).map((b) => [b.msgId, b]))
   )
 
+  // ---- pan / scale canvas
+
   const canvasOffset = ref([0, 0])
+  const canvasScale = ref(1)
+
+  // function zoomOnOrigin(delta, { x, y }) {
+  //   const targetScale = canvasScale.value * delta
+
+  //   canvasScale.value = targetScale
+
+  //   canvasOffset.value[0] -= (x - cX) * (delta - 1)
+  //   canvasOffset.value[1] -= (y - cY) * (delta - 1)
+  // }
 
   // ---- block ui related
 
@@ -214,6 +226,7 @@ export const useProjectStore = defineStore('project', () => {
     assignStdout,
     assignDisplayData,
 
-    canvasOffset
+    canvasOffset,
+    canvasScale
   }
 })
