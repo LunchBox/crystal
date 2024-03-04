@@ -53,10 +53,9 @@ export default class Block extends Base {
     })
   }
 
-  setArg(inputId, block, output) {
+  setInput(inputId, block, output) {
     const input = this.inputs.find((inp) => inp.id === inputId)
     input.source = [block.id, output.id].join('_')
-    // this.argsMap[arg] = [block.id, outputLabel].join('_')
   }
 
   delInput(idx) {

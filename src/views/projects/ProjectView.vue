@@ -15,22 +15,34 @@ import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
 
 const store = useProjectStore()
-const { project, selectedInput, selectedOutput, ioPairs, elPositions } = storeToRefs(store)
+const { project, selectedInput, selectedOutput, ioPairs, elPositions, selectedBlocks } =
+  storeToRefs(store)
+const { selectBlock, toggleBlock, isBlockSelected } = store
 
 const blocks = computed(() => project.value.blocks)
 
 const addingBlock = ref(false)
 const editingBlock = ref(null)
 
-const dragging = ref(new Set())
-function draggingBlock(block) {
-  dragging.value.add(block)
+const dragging = ref(false)
+
+function mousedownOnBlock(e, block) {
+  if (!isBlockSelected(block)) {
+    if (e.ctrlKey) {
+      toggleBlock(block)
+    } else {
+      selectBlock(block)
+    }
+  }
+
+  dragging.value = true
 }
 
 function mousemove(e) {
-  if (dragging.value.size > 0) {
-    dragging.value.forEach((item) => {
-      const pos = item.position
+  if (dragging.value && selectedBlocks.value.size > 0) {
+    const blocks = [...selectedBlocks.value]
+    blocks.forEach((block) => {
+      const pos = block.position
       if (pos) {
         pos[0] += e.movementX
         pos[1] += e.movementY
@@ -40,18 +52,18 @@ function mousemove(e) {
 }
 
 function mouseup() {
-  dragging.value.clear()
+  dragging.value = false
 }
 
 onMounted(() => {
   console.log(ioPairs)
   document.addEventListener('mousemove', mousemove)
-  document.addEventListener('mouseup', mouseup)
+  window.addEventListener('mouseup', mouseup)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('mousemove', mousemove)
-  document.removeEventListener('mouseup', mouseup)
+  window.removeEventListener('mouseup', mouseup)
 })
 
 function curve(pair) {
@@ -107,7 +119,7 @@ function run() {
       :block="block"
       :key="block.id"
       @edit="editingBlock = block"
-      @dragging="draggingBlock(block)"
+      @mousedown-on-block="mousedownOnBlock"
     >
     </BlockView>
   </div>

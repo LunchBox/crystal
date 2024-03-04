@@ -9,11 +9,11 @@ import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
 const { selectedInput, selectedOutput, elPositions } = storeToRefs(store)
-const { connectIO } = store
+const { connectIO, isBlockSelected } = store
 
 const props = defineProps(['block'])
 
-defineEmits(['edit', 'dragging'])
+const emit = defineEmits(['edit', 'mousedown-on-block'])
 
 // TODO: it changed the props data...
 function clearArg(input) {
@@ -82,6 +82,10 @@ const elRefs = ref({})
 
 function updatePositions() {
   Object.entries(elRefs.value).forEach(([id, el]) => {
+    if (!el) {
+      delete elPositions.value[id]
+      return
+    }
     const rect = el.getBoundingClientRect()
     elPositions.value[id] = rect
   })
@@ -92,6 +96,7 @@ const callback = function (mutationsList, observer) {
   for (const mutation of mutationsList) {
     if (mutation.type === 'childList') {
       // console.log('A child node has been added or removed.')
+      updatePositions()
     } else if (mutation.type === 'attributes') {
       // console.log('A ' + mutation.attributeName + ' attribute was modified.')
       updatePositions()
@@ -115,11 +120,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="block" :style="bStyle" ref="blockRef">
+  <div class="block" :style="bStyle" :class="{ selected: isBlockSelected(block) }" ref="blockRef">
     <div
       class="block-title"
       @dblclick.prevent="$emit('edit', block)"
-      @mousedown.prevent="$emit('dragging', block)"
+      @contextmenu.prevent
+      @mousedown.prevent="$emit('mousedown-on-block', $event, block)"
     >
       [{{ block.msgIdx }}] {{ block.title }} {{ block.status }}
 
@@ -184,7 +190,11 @@ onBeforeUnmount(() => {
 <style scoped>
 .block {
   position: absolute;
-  /* font-size: 0.875rem; */
+  padding: 0.25rem;
+  border: 2px solid transparent;
+}
+.block.selected {
+  border-color: orange;
 }
 
 .block-title {

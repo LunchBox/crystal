@@ -7,18 +7,18 @@ export const state = reactive({
   connected: false
 })
 
-function applyAttrs(obj, attrs) {
-  Object.keys(attrs).forEach((k) => {
-    if (k === 'id') return
-    if (obj[k] === null || obj[k] === undefined) {
-      obj[k] = attrs[k]
-    } else if (attrs[k] && typeof attrs[k] === 'object') {
-      applyAttrs(obj[k], attrs[k])
-    } else {
-      obj[k] = attrs[k]
-    }
-  })
-}
+// function applyAttrs(obj, attrs) {
+//   Object.keys(attrs).forEach((k) => {
+//     if (k === 'id') return
+//     if (obj[k] === null || obj[k] === undefined) {
+//       obj[k] = attrs[k]
+//     } else if (attrs[k] && typeof attrs[k] === 'object') {
+//       applyAttrs(obj[k], attrs[k])
+//     } else {
+//       obj[k] = attrs[k]
+//     }
+//   })
+// }
 
 export const useProjectStore = defineStore('project', () => {
   const project = ref(null)
@@ -28,9 +28,32 @@ export const useProjectStore = defineStore('project', () => {
     Object.fromEntries(blocks.value.filter((b) => b.msgId).map((b) => [b.msgId, b]))
   )
 
-  const data = localStorage.getItem('project') || {}
-  project.value = new Project().load(data)
-  arrangeBlocks()
+  // ---- block ui related
+
+  const selectedBlocks = ref(new Set())
+
+  function selectBlock(block) {
+    clearSelectedBlocks()
+    selectedBlocks.value.add(block)
+  }
+
+  function toggleBlock(block) {
+    if (selectedBlocks.value.has(block)) {
+      selectedBlocks.value.delete(block)
+    } else {
+      selectedBlocks.value.add(block)
+    }
+  }
+
+  function clearSelectedBlocks() {
+    selectedBlocks.value.clear()
+  }
+
+  function isBlockSelected(block) {
+    return selectedBlocks.value.has(block)
+  }
+
+  // ---- block modification
 
   function addBlock(block) {
     project.value.blocks.push(block)
@@ -39,9 +62,17 @@ export const useProjectStore = defineStore('project', () => {
   function updateBlock(id, block) {
     const ext = project.value.blocks.find((b) => b.id === id)
     if (ext) {
-      applyAttrs(ext, block)
+      // applyAttrs(ext, block)
+      const { id, ...attrs } = block
+      Object.assign(ext, attrs)
     }
   }
+
+  // ---- auto save / load with localStorage
+
+  const data = localStorage.getItem('project') || {}
+  project.value = new Project().load(data)
+  arrangeBlocks()
 
   function save() {
     const pj = project.value
@@ -51,6 +82,8 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   watch(project, save, { deep: true })
+
+  // ---- io related
 
   const selectedInput = ref(null)
   const selectedOutput = ref(null)
@@ -62,7 +95,7 @@ export const useProjectStore = defineStore('project', () => {
       selectedInput.value[0] !== selectedOutput.value[0] //TODO: not allow to connect the same block output to input?
     ) {
       const [block, input] = selectedInput.value
-      block.setArg(input.id, ...selectedOutput.value)
+      block.setInput(input.id, ...selectedOutput.value)
 
       console.log(block)
       selectedInput.value = null
@@ -88,6 +121,8 @@ export const useProjectStore = defineStore('project', () => {
 
     return idPairs
   })
+
+  // ---- block sequence related
 
   function getWeight(block) {
     if (block._weight !== null) return block._weight
@@ -126,6 +161,8 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
+  // ---- communication with kernel related
+
   function assignMsgId(blockId, msgId) {
     const block = blockMap.value[blockId]
     if (block) block.msgId = msgId
@@ -148,9 +185,16 @@ export const useProjectStore = defineStore('project', () => {
 
   return {
     project,
+    selectedBlocks,
+    selectBlock,
+    toggleBlock,
+    clearSelectedBlocks,
+    isBlockSelected,
+
     addBlock,
     updateBlock,
     save,
+
     selectedInput,
     selectedOutput,
     connectIO,

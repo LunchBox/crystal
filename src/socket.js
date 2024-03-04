@@ -37,6 +37,7 @@ socket.on('reg_msg', (msg) => {
 
 function run(block) {
   const code = block.toCode()
+  console.log(code)
   socket.emit('execute_input', JSON.stringify({ block_id: block.id, code }))
 }
 
