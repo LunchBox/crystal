@@ -15,6 +15,8 @@ export const useProjectStore = defineStore('project', () => {
     Object.fromEntries(blocks.value.filter((b) => b.msgId).map((b) => [b.msgId, b]))
   )
 
+  const canvasOffset = ref([0, 0])
+
   // ---- block ui related
 
   const selectedBlocks = ref(new Set())
@@ -50,7 +52,7 @@ export const useProjectStore = defineStore('project', () => {
     if (!block._outputs) return
     block._outputs.forEach((ob) => {
       ob.inputs.forEach((inp) => {
-        if (inp.source.startsWith(block.id)) {
+        if (inp.source && inp.source.startsWith(block.id)) {
           inp.source = null
         }
       })
@@ -210,6 +212,8 @@ export const useProjectStore = defineStore('project', () => {
     assignMsgId,
     assignStatus,
     assignStdout,
-    assignDisplayData
+    assignDisplayData,
+
+    canvasOffset
   }
 })

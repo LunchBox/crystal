@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { selectedInput, selectedOutput, elPositions } = storeToRefs(store)
+const { canvasOffset, selectedInput, selectedOutput, elPositions } = storeToRefs(store)
 const { connectIO, isBlockSelected } = store
 
 const props = defineProps(['block'])
@@ -81,13 +81,14 @@ const blockRef = ref(null)
 const elRefs = ref({})
 
 function updatePositions() {
+  const [ox, oy] = canvasOffset.value
   Object.entries(elRefs.value).forEach(([id, el]) => {
     if (!el) {
       delete elPositions.value[id]
       return
     }
-    const rect = el.getBoundingClientRect()
-    elPositions.value[id] = rect
+    const { x, y, width, height } = el.getBoundingClientRect()
+    elPositions.value[id] = { x: x - ox, y: y - oy, width, height }
   })
 }
 
@@ -121,16 +122,18 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="block" ref="blockRef" :style="bStyle" :class="{ selected: isBlockSelected(block) }">
-    <div
-      class="block-title"
-      :ref="(el) => (elRefs[`${block.id}`] = el)"
-      @dblclick.prevent="$emit('edit', block)"
-      @contextmenu.prevent
-      @mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)"
-    >
-      [{{ block.msgIdx }}] {{ block.title }} {{ block.status }}
+    <div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)">
+      <span
+        @dblclick.prevent="$emit('edit', block)"
+        @contextmenu.prevent
+        @mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)"
+      >
+        [{{ block.msgIdx }}] {{ block.title }} {{ block.status }}
+      </span>
 
-      <a v-if="block.status === 'idle'" href="#" @click.prevent="run">Run</a>
+      <a v-if="block.status === 'idle'" href="#" @click.prevent="run" style="margin-left: 0.25rem">
+        Run
+      </a>
     </div>
     <div class="block-content">
       <div class="block-inputs">

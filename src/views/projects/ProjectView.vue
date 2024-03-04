@@ -15,8 +15,15 @@ import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
 
 const store = useProjectStore()
-const { project, selectedInput, selectedOutput, ioPairs, elPositions, selectedBlocks } =
-  storeToRefs(store)
+const {
+  canvasOffset,
+  project,
+  selectedInput,
+  selectedOutput,
+  ioPairs,
+  elPositions,
+  selectedBlocks
+} = storeToRefs(store)
 const { addBlock, delBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks } = store
 
 const blocks = computed(() => project.value.blocks)
@@ -34,12 +41,21 @@ function deleteBlocks() {
 
 // ---- dragging related
 
-const dragging = ref(false)
+const draggingBlocks = ref(false)
+const draggingCanvas = ref(false)
 const cloned = ref(false)
 
 const selecting = ref(false)
 const startPos = ref(null)
 const currentPos = ref(null)
+
+const canvasStyle = computed(() => {
+  const [x, y] = canvasOffset.value
+  return {
+    top: y + 'px',
+    left: x + 'px'
+  }
+})
 
 const selectionBoxStyle = computed(() => {
   if (!startPos.value || !currentPos.value) return {}
@@ -61,8 +77,13 @@ function mousdown(e) {
   // only activate on left click
   if (e.button === 0) {
     selecting.value = true
-    const { clientX: x, clientY: y } = e
+    const { pageX: x, pageY: y } = e
     startPos.value = [x, y]
+  }
+
+  // right click
+  if (e.button === 2) {
+    draggingCanvas.value = true
   }
 }
 
@@ -77,7 +98,7 @@ function mousedownOnBlock(e, block) {
     }
   }
 
-  dragging.value = true
+  draggingBlocks.value = true
 }
 
 function cloneSelections() {
@@ -101,9 +122,14 @@ function moveSelections(e) {
   })
 }
 
+function moveCanvas(e) {
+  canvasOffset.value[0] += e.movementX
+  canvasOffset.value[1] += e.movementY
+}
+
 function mousemove(e) {
   // only count left button
-  if (dragging.value && selectedBlocks.value.size > 0) {
+  if (draggingBlocks.value && selectedBlocks.value.size > 0) {
     // clone blocks on ctrl + drag
     if (e.ctrlKey && !cloned.value) {
       return cloneSelections()
@@ -112,10 +138,14 @@ function mousemove(e) {
     moveSelections(e)
   }
 
+  if (draggingCanvas.value) {
+    moveCanvas(e)
+  }
+
   if (selecting.value) {
     // disable default user-select logic
     e.preventDefault()
-    const { clientX: x, clientY: y } = e
+    const { pageX: x, pageY: y } = e
     currentPos.value = [x, y]
   }
 }
@@ -125,9 +155,10 @@ function selectBlocksInRange() {
 
   const [x1, y1] = startPos.value
   const [x2, y2] = currentPos.value
+  const [ox, oy] = canvasOffset.value
 
-  const mx = Math.min(x1, x2)
-  const my = Math.min(y1, y2)
+  const mx = Math.min(x1, x2) - ox
+  const my = Math.min(y1, y2) - oy
   const mw = Math.abs(x1 - x2)
   const mh = Math.abs(y1 - y2)
 
@@ -145,7 +176,8 @@ function selectBlocksInRange() {
 function mouseup() {
   selectBlocksInRange()
 
-  dragging.value = false
+  draggingBlocks.value = false
+  draggingCanvas.value = false
 
   selecting.value = false
   startPos.value = null
@@ -169,6 +201,8 @@ function curve(pair) {
 
   if (!elPositions.value[output]) return
   if (!elPositions.value[input]) return
+
+  const [ox, oy] = canvasOffset.value
 
   let { x: x1, y: y1 } = elPositions.value[output]
   let { x: x2, y: y2 } = elPositions.value[input]
@@ -209,21 +243,25 @@ function run() {
       @success="editingBlock = null"
     ></EditBlock>
   </div>
-  <div class="block-wrapper">
-    <svg xmlns="http://www.w3.org/2000/svg">
-      <g transform="translate(8, 8)" stroke-width="1.5" stroke="#999" fill="transparent">
-        <path v-for="pair in ioPairs" :d="curve(pair)" />
-      </g>
-    </svg>
+  <div class="canvas-outer" @contextmenu.prevent>
+    <div class="block-wrapper" :style="canvasStyle">
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <g :transform="`translate(${canvasOffset[0]}, ${canvasOffset[1]})`">
+          <g transform="translate(8, 8)" stroke-width="1.5" stroke="#999" fill="transparent">
+            <path v-for="pair in ioPairs" :d="curve(pair)" />
+          </g>
+        </g>
+      </svg>
 
-    <BlockView
-      v-for="block in blocks"
-      :block="block"
-      :key="block.id"
-      @edit="editingBlock = block"
-      @mousedown-on-block="mousedownOnBlock"
-    >
-    </BlockView>
+      <BlockView
+        v-for="block in blocks"
+        :block="block"
+        :key="block.id"
+        @edit="editingBlock = block"
+        @mousedown-on-block="mousedownOnBlock"
+      >
+      </BlockView>
+    </div>
   </div>
   <div v-if="startPos && currentPos" class="selection-box" :style="selectionBoxStyle"></div>
 </template>
@@ -231,7 +269,7 @@ function run() {
 <style scoped>
 svg {
   z-index: -1;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -251,7 +289,22 @@ svg {
 
 .block-wrapper {
   font-size: 0.75rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
+
+.canvas-outer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+}
+
 .block-wrapper input,
 .block-wrapper textarea,
 .block-wrapper select {
@@ -259,6 +312,9 @@ svg {
 }
 
 .toolbar {
+  position: fixed;
+  z-index: 10;
+  top: 80px;
   display: flex;
   gap: 0 0.5rem;
   font-size: 0.75rem;
