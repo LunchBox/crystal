@@ -3,7 +3,7 @@ import { io } from 'socket.io-client'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { assignMsgId, assignStatus, assignStdout } = store
+const { assignMsgId, assignStatus, assignStdout, assignDisplayData } = store
 
 const URL = 'http://127.0.0.1:5000'
 
@@ -23,6 +23,8 @@ socket.on('output', (msg) => {
   const msgObj = JSON.parse(msg)
   if (msgObj.msg_type === 'status') {
     assignStatus(msgObj?.parent_header?.msg_id, msgObj?.content?.execution_state)
+  } else if (msgObj.msg_type === 'display_data') {
+    assignDisplayData(msgObj?.parent_header?.msg_id, msgObj?.content?.data)
   } else if (msgObj?.content?.name === 'stdout') {
     assignStdout(msgObj?.parent_header?.msg_id, msgObj?.content?.text)
   }

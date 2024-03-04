@@ -24,12 +24,27 @@ export default class Block extends Base {
     this.msgId = null
     this.status = 'idle'
     this.stdout = null
+    this.displayData = null
   }
 
   get msgIdx() {
     if (!this.msgId) return '*'
 
     return this.msgId.split('_').reverse()[0]
+  }
+
+  get hasInlineImage() {
+    return this.displayData && this.displayData['image/png']
+  }
+
+  get inlineImageCaption() {
+    if (!this.hasInlineImage) return null
+    return this.displayData['text/plain']
+  }
+
+  get inlineImage() {
+    if (!this.hasInlineImage) return null
+    return `data:image/png;base64, ${this.displayData['image/png']}`
   }
 
   afterLoad() {
@@ -79,6 +94,10 @@ export default class Block extends Base {
   }
 
   toCode() {
+    if (this.inputs.length === 0 && this.outputs.length === 0) {
+      return this.code
+    }
+
     const funcStr = this.fFunc()
     if (this.outputs.length === 0) {
       return funcStr

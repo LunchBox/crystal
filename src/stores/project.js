@@ -141,6 +141,11 @@ export const useProjectStore = defineStore('project', () => {
     if (block) block.stdout = text
   }
 
+  function assignDisplayData(msgId, dataObj) {
+    const block = blockByMsg.value[msgId]
+    if (block) block.displayData = dataObj
+  }
+
   return {
     project,
     addBlock,
@@ -153,6 +158,7 @@ export const useProjectStore = defineStore('project', () => {
     ioPairs,
     assignMsgId,
     assignStatus,
-    assignStdout
+    assignStdout,
+    assignDisplayData
   }
 })

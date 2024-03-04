@@ -91,9 +91,9 @@ const config = { attributes: true, childList: true, subtree: true }
 const callback = function (mutationsList, observer) {
   for (const mutation of mutationsList) {
     if (mutation.type === 'childList') {
-      console.log('A child node has been added or removed.')
+      // console.log('A child node has been added or removed.')
     } else if (mutation.type === 'attributes') {
-      console.log('A ' + mutation.attributeName + ' attribute was modified.')
+      // console.log('A ' + mutation.attributeName + ' attribute was modified.')
       updatePositions()
     }
   }
@@ -175,13 +175,16 @@ onBeforeUnmount(() => {
     <div class="block-stdout">
       <pre>{{ block.stdout }}</pre>
     </div>
+    <div v-if="block.displayData">
+      <img v-if="block.hasInlineImage" :src="block.inlineImage" :alt="block.inlineImageCaption" />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .block {
   position: absolute;
-  font-size: 0.875rem;
+  /* font-size: 0.875rem; */
 }
 
 .block-title {
@@ -190,7 +193,7 @@ onBeforeUnmount(() => {
 
 .block-content {
   border: 1px solid #ccc;
-  display: flex;
+  display: inline-flex;
   gap: 0 0.5rem;
 }
 
@@ -220,5 +223,9 @@ onBeforeUnmount(() => {
 
 .indicator.active {
   background: orange;
+}
+
+pre {
+  font-size: 0.625rem;
 }
 </style>

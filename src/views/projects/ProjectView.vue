@@ -116,7 +116,7 @@ function run() {
 <style scoped>
 svg {
   z-index: -1;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -127,14 +127,20 @@ svg {
   display: block;
   margin: 0;
 }
+
 .block-wrapper {
-  position: relative;
+  font-size: 0.75rem;
+}
+.block-wrapper input,
+.block-wrapper textarea,
+.block-wrapper select {
+  font-size: 0.75rem;
 }
 
 .toolbar {
   display: flex;
   gap: 0 0.5rem;
-  font-size: 0.825rem;
+  font-size: 0.75rem;
 }
 
 .btn {
