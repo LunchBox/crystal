@@ -4,9 +4,35 @@ const REPLACER = (key, value) => {
   return key.startsWith('_') || key.startsWith('$') ? undefined : value
 }
 
+const DOWN_CASE_LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('')
+
+// const UP_CASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+const NUMBERS = '0123456789'.split('')
+
+const CHARS = [...DOWN_CASE_LETTERS, ...NUMBERS]
+
+const KEY_LEN = 8
+
+function randomItem(array) {
+  const idx = Math.floor(Math.random() * array.length)
+  return array[idx]
+}
+
+function randomId(keyLen = KEY_LEN) {
+  return [
+    randomItem(DOWN_CASE_LETTERS), // make sure it start from chars
+    ...new Array(keyLen - 1).fill().map(() => randomItem(CHARS))
+  ].join('')
+}
+
 export default class Base {
   constructor() {
-    this.id = uuidv4()
+    this.id = randomId()
+  }
+
+  resetID() {
+    this.id = randomId()
   }
 
   // clone without id

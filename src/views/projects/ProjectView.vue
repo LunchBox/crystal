@@ -8,6 +8,8 @@ import Project from '@/models/project.js'
 import Block from '@/models/block.js'
 import NumberBlock from '@/models/number_block'
 
+import BlockInput from '@/models/block_input.js'
+
 import BlockView from '../blocks/BlockView.vue'
 import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
@@ -42,6 +44,7 @@ function mouseup() {
 }
 
 onMounted(() => {
+  console.log(ioPairs)
   document.addEventListener('mousemove', mousemove)
   document.addEventListener('mouseup', mouseup)
 })
@@ -50,11 +53,6 @@ onBeforeUnmount(() => {
   document.removeEventListener('mousemove', mousemove)
   document.removeEventListener('mouseup', mouseup)
 })
-
-// console.log(ioPairs.value)
-// onMounted(() => {
-//   console.log(elPositions.value)
-// })
 
 function curve(pair) {
   const [output, input] = pair
@@ -67,6 +65,12 @@ function curve(pair) {
 
   return `M ${x1} ${y1}, C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`
 }
+
+function run() {
+  blocks.value.forEach((b) => {
+    console.log(b.toCode())
+  })
+}
 </script>
 
 <template>
@@ -74,8 +78,8 @@ function curve(pair) {
   <div class="toolbar">
     <a href="" class="btn" @click.prevent="save">Save</a>
     <a href="" class="btn" @click.prevent="addingBlock = true">Add Block</a>
-    <a href="" class="btn">Run</a>
-    <a href="" class="btn">Run Block</a>
+    <a href="" class="btn" @click.prevent="run">Run</a>
+    <a href="" class="btn" @click.prevent="run">Run Block</a>
   </div>
   <div style="position: absolute; z-index: 2">
     <AddBlock

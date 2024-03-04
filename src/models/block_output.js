@@ -26,9 +26,12 @@ export const INPUT_TYPES = [
 // basiclly the HTML input type
 export const OUTPUT_TYPES = ['func_return', 'string', 'text', ...INPUT_TYPES, 'select']
 
-export default class OutputConfig {
+import Base from './base.js'
+
+export default class OutputConfig extends Base {
   constructor() {
-    this.name = 'res'
+    super()
+    this.label = 'res'
     this.type = null
     this.defaultValue = null
     this.options = []

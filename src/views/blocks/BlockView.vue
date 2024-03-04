@@ -13,33 +13,33 @@ const props = defineProps(['block'])
 
 defineEmits(['edit', 'dragging'])
 
-function clearArg(arg) {
-  props.block.argsMap[arg] = null
+function clearArg(input) {
+  input.source = null
 }
 
-function mousedownInput(arg) {
+function mousedownInput(input) {
   if (selectedInput.value) {
-    const [block, _arg] = selectedInput.value
-    if (block === props.block && arg === _arg) {
+    const [block, _input] = selectedInput.value
+    if (block === props.block && input === _input) {
       selectedInput.value = null
     } else {
-      selectedInput.value = [props.block, arg]
+      selectedInput.value = [props.block, input]
     }
   } else {
-    selectedInput.value = [props.block, arg]
+    selectedInput.value = [props.block, input]
     connectIO()
   }
 }
-function mousedownOutput(label) {
+function mousedownOutput(output) {
   if (selectedOutput.value) {
-    const [block, _label] = selectedOutput.value
-    if (block === props.block && label === _label) {
+    const [block, _output] = selectedOutput.value
+    if (block === props.block && output === _output) {
       selectedOutput.value = null
     } else {
-      selectedOutput.value = [props.block, label]
+      selectedOutput.value = [props.block, output]
     }
   } else {
-    selectedOutput.value = [props.block, label]
+    selectedOutput.value = [props.block, output]
     connectIO()
   }
 }
@@ -52,20 +52,20 @@ const bStyle = computed(() => {
   }
 })
 
-function isArgSelected(arg) {
+function isArgSelected(input) {
   if (!selectedInput.value) return false
-  const [block, _arg] = selectedInput.value
-  return block === props.block && arg === _arg
+  const [block, _input] = selectedInput.value
+  return block === props.block && input === _input
 }
 
-function isOutputSelected(label) {
+function isOutputSelected(output) {
   if (!selectedOutput.value) return false
-  const [block, _label] = selectedOutput.value
-  return block === props.block && label === _label
+  const [block, _output] = selectedOutput.value
+  return block === props.block && output === _output
 }
 
-function isOccupied(arg) {
-  return props.block.argsMap[arg]
+function isOccupied(input) {
+  return input.source
 }
 
 const blockRef = ref(null)
@@ -78,28 +78,30 @@ function updatePositions() {
   })
 }
 
+const config = { attributes: true, childList: true, subtree: true }
+const callback = function (mutationsList, observer) {
+  for (const mutation of mutationsList) {
+    if (mutation.type === 'childList') {
+      console.log('A child node has been added or removed.')
+    } else if (mutation.type === 'attributes') {
+      console.log('A ' + mutation.attributeName + ' attribute was modified.')
+      updatePositions()
+    }
+  }
+}
+const observer = new MutationObserver(callback)
+
 onMounted(() => {
   updatePositions()
 
   window.addEventListener('resize', updatePositions)
 
-  const config = { attributes: true, childList: true, subtree: true }
-  const callback = function (mutationsList, observer) {
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'childList') {
-        console.log('A child node has been added or removed.')
-      } else if (mutation.type === 'attributes') {
-        console.log('A ' + mutation.attributeName + ' attribute was modified.')
-        updatePositions()
-      }
-    }
-  }
-  const observer = new MutationObserver(callback)
   observer.observe(blockRef.value, config)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updatePositions)
+  observer.disconnect()
 })
 </script>
 
@@ -110,24 +112,25 @@ onBeforeUnmount(() => {
       @dblclick.prevent="$emit('edit', block)"
       @mousedown.prevent="$emit('dragging', block)"
     >
+      [{{ block._weight }}]
       {{ block.title }}
     </div>
     <div class="block-content">
       <div class="block-inputs">
-        <div class="block-input" v-for="arg in block.args" :key="arg">
+        <div class="block-input" v-for="input in block.inputs" :key="input.id">
           <span
-            :ref="(el) => (elRefs[`${block.id}_${arg}_i`] = el)"
+            :ref="(el) => (elRefs[`${block.id}_${input.id}_i`] = el)"
             class="indicator input"
-            :class="{ active: isArgSelected(arg), occupied: isOccupied(arg) }"
-            :title="block.argsMap[arg]"
-            @mousedown.prevent="mousedownInput(arg)"
-            @dblclick.prevent="clearArg(arg)"
+            :class="{ active: isArgSelected(input), occupied: isOccupied(input) }"
+            :title="input.source"
+            @mousedown.prevent="mousedownInput(input)"
+            @dblclick.prevent="clearArg(input)"
           ></span>
-          <span>{{ arg }}</span>
+          <span>{{ input.label }}</span>
         </div>
       </div>
       <div class="block-outputs">
-        <div class="block-output" v-for="output in block.outputs" :key="output">
+        <div class="block-output" v-for="output in block.outputs" :key="output.id">
           <span>{{ output.label }}</span>
 
           <input v-if="output.type === 'string'" type="text" v-model="block.values[output.label]" />
@@ -151,10 +154,10 @@ onBeforeUnmount(() => {
           </select>
 
           <span
-            :ref="(el) => (elRefs[`${block.id}_${output.label}_o`] = el)"
+            :ref="(el) => (elRefs[`${block.id}_${output.id}_o`] = el)"
             class="indicator output"
-            :class="{ active: isOutputSelected(output.label) }"
-            @mousedown.prevent="mousedownOutput(output.label)"
+            :class="{ active: isOutputSelected(output) }"
+            @mousedown.prevent="mousedownOutput(output)"
           ></span>
         </div>
       </div>

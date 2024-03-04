@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import Block from '@/models/block.js'
+import BlockInput from '@/models/block_input.js'
 import BlockOutput from '@/models/block_output.js'
 import { OUTPUT_TYPES } from '@/models/block_output.js'
 
@@ -19,12 +20,12 @@ watch(
   { immediate: true }
 )
 
-function addArg() {
-  formData.value.args.push('arg')
+function addInput() {
+  formData.value.inputs.push(new BlockInput())
 }
 
-function delArg(idx) {
-  formData.value.delArg(idx)
+function delInput(idx) {
+  formData.value.delInput(idx)
 }
 
 function addOutput() {
@@ -60,16 +61,16 @@ function onSubmit() {
 
       <div>
         <label>Args</label>
-        <div v-for="(arg, idx) in formData.args">
-          <input type="text" v-model="formData.args[idx]" />
-          <button @click.prevent="delArg(idx)">X</button>
+        <div v-for="(input, idx) in formData.inputs">
+          <input type="text" v-model="formData.inputs[idx].label" />
+          <button @click.prevent="delInput(idx)">X</button>
         </div>
-        <button @click.prevent="addArg">Add Arg</button>
+        <button @click.prevent="addInput">Add Input</button>
       </div>
 
       <div>
         <label>Outputs</label>
-        <div v-for="(arg, outputIdx) in formData.outputs">
+        <div v-for="(output, outputIdx) in formData.outputs">
           <input type="text" v-model="formData.outputs[outputIdx].label" required />
           <select v-model="formData.outputs[outputIdx].type">
             <option v-for="tp in OUTPUT_TYPES">{{ tp }}</option>
@@ -77,7 +78,7 @@ function onSubmit() {
 
           <button @click.prevent="delOutput(outputIdx)">X</button>
 
-          <div v-if="arg.type === 'select'">
+          <div v-if="output.type === 'select'">
             <div v-for="(opt, optIdx) in formData.outputs[outputIdx].options">
               <input type="text" v-model="formData.outputs[outputIdx].options[optIdx]" />
               <button @click.prevent="delOutputOption(outputIdx, optIdx)">X</button>
@@ -86,6 +87,13 @@ function onSubmit() {
           </div>
         </div>
         <button @click.prevent="addOutput">Add Output</button>
+      </div>
+
+      <div>
+        <label>
+          <span>Func</span>
+          <input type="text" v-model="formData.func" />
+        </label>
       </div>
 
       <div>
@@ -107,5 +115,7 @@ function onSubmit() {
 textarea {
   display: block;
   box-sizing: border-box;
+  width: 400px;
+  height: 120px;
 }
 </style>
