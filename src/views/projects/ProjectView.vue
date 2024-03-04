@@ -113,6 +113,8 @@ function mousemove(e) {
   }
 
   if (selecting.value) {
+    // disable default user-select logic
+    e.preventDefault()
     const { clientX: x, clientY: y } = e
     currentPos.value = [x, y]
   }
@@ -151,7 +153,6 @@ function mouseup() {
 }
 
 onMounted(() => {
-  console.log(ioPairs)
   window.addEventListener('mousedown', mousdown)
   document.addEventListener('mousemove', mousemove)
   window.addEventListener('mouseup', mouseup)
@@ -208,7 +209,7 @@ function run() {
       @success="editingBlock = null"
     ></EditBlock>
   </div>
-  <div class="block-wrapper prevent-select">
+  <div class="block-wrapper">
     <svg xmlns="http://www.w3.org/2000/svg">
       <g transform="translate(8, 8)" stroke-width="1.5" stroke="#999" fill="transparent">
         <path v-for="pair in ioPairs" :d="curve(pair)" />
@@ -242,14 +243,9 @@ svg {
   margin: 0;
 }
 
-.prevent-select {
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
-}
-
 .selection-box {
   position: absolute;
+  pointer-events: none;
   border: 1px solid green;
 }
 

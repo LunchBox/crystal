@@ -189,12 +189,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.prevent-select {
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
-}
-
 .block {
   position: absolute;
   padding: 0.25rem;
