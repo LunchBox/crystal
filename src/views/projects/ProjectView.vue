@@ -17,7 +17,7 @@ import EditBlock from '../blocks/EditBlock.vue'
 const store = useProjectStore()
 const { project, selectedInput, selectedOutput, ioPairs, elPositions, selectedBlocks } =
   storeToRefs(store)
-const { selectBlock, toggleBlock, isBlockSelected } = store
+const { addBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks } = store
 
 const blocks = computed(() => project.value.blocks)
 
@@ -25,6 +25,12 @@ const addingBlock = ref(false)
 const editingBlock = ref(null)
 
 const dragging = ref(false)
+const cloned = ref(false)
+
+function mousdown() {
+  cloned.value = false
+  clearSelectedBlocks()
+}
 
 function mousedownOnBlock(e, block) {
   if (!isBlockSelected(block)) {
@@ -40,6 +46,18 @@ function mousedownOnBlock(e, block) {
 
 function mousemove(e) {
   if (dragging.value && selectedBlocks.value.size > 0) {
+    // clone blocks on ctrl + drag
+    if (e.ctrlKey && !cloned.value) {
+      const clones = [...selectedBlocks.value].map((b) => b.clone())
+      clearSelectedBlocks()
+      clones.forEach((b) => {
+        addBlock(b)
+        toggleBlock(b)
+      })
+      cloned.value = true
+      return
+    }
+
     const blocks = [...selectedBlocks.value]
     blocks.forEach((block) => {
       const pos = block.position
@@ -57,11 +75,13 @@ function mouseup() {
 
 onMounted(() => {
   console.log(ioPairs)
+  window.addEventListener('mousedown', mousdown)
   document.addEventListener('mousemove', mousemove)
   window.addEventListener('mouseup', mouseup)
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('mousedown', mousdown)
   document.removeEventListener('mousemove', mousemove)
   window.removeEventListener('mouseup', mouseup)
 })

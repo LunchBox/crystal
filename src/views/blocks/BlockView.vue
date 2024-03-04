@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
       class="block-title"
       @dblclick.prevent="$emit('edit', block)"
       @contextmenu.prevent
-      @mousedown.prevent="$emit('mousedown-on-block', $event, block)"
+      @mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)"
     >
       [{{ block.msgIdx }}] {{ block.title }} {{ block.status }}
 
@@ -195,6 +195,7 @@ onBeforeUnmount(() => {
 }
 .block.selected {
   border-color: orange;
+  z-index: 1;
 }
 
 .block-title {
