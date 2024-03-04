@@ -69,6 +69,12 @@ function onSubmit() {
       </div>
 
       <div>
+        <label>
+          <input type="checkbox" v-model="formData.namedArgs" /> use named args in function
+        </label>
+      </div>
+
+      <div>
         <label>Outputs</label>
         <div v-for="(output, outputIdx) in formData.outputs">
           <input type="text" v-model="formData.outputs[outputIdx].label" required />

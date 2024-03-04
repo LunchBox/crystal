@@ -1,7 +1,11 @@
-import { ref, computed, watch } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
 
 import Project from '@/models/project.js'
+
+export const state = reactive({
+  connected: false
+})
 
 function applyAttrs(obj, attrs) {
   Object.keys(attrs).forEach((k) => {
@@ -18,6 +22,11 @@ function applyAttrs(obj, attrs) {
 
 export const useProjectStore = defineStore('project', () => {
   const project = ref(null)
+  const blocks = computed(() => project.value.blocks)
+  const blockMap = computed(() => Object.fromEntries(blocks.value.map((b) => [b.id, b])))
+  const blockByMsg = computed(() =>
+    Object.fromEntries(blocks.value.filter((b) => b.msgId).map((b) => [b.msgId, b]))
+  )
 
   const data = localStorage.getItem('project') || {}
   project.value = new Project().load(data)
@@ -93,31 +102,43 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   function arrangeBlocks() {
-    const blocks = project.value.blocks
-
     // reset
-    blocks.forEach((b) => {
+    blocks.value.forEach((b) => {
       b._weight = null
       b._outputs = new Set()
     })
 
-    const blockMap = Object.fromEntries(blocks.map((b) => [b.id, b]))
-    blocks.forEach((b) => {
+    blocks.value.forEach((b) => {
       const inps = b.inputs.filter((inp) => inp.source !== null)
       inps.forEach((inp) => {
         const [bid, _] = inp.source.split('_')
-        const tb = blockMap[bid]
+        const tb = blockMap.value[bid]
         if (tb) tb._outputs.add(b)
       })
     })
 
     try {
-      blocks.forEach(getWeight)
-      project.value.blocks = blocks.sort((a, b) => b._weight - a._weight)
+      blocks.value.forEach(getWeight)
+      project.value.blocks = blocks.value.sort((a, b) => b._weight - a._weight)
     } catch (e) {
       console.log('Error: failed to arrange blocks, some blocks has loopd')
       console.log(e)
     }
+  }
+
+  function assignMsgId(blockId, msgId) {
+    const block = blockMap.value[blockId]
+    if (block) block.msgId = msgId
+  }
+
+  function assignStatus(msgId, status) {
+    const block = blockByMsg.value[msgId]
+    if (block) block.status = status
+  }
+
+  function assignStdout(msgId, text) {
+    const block = blockByMsg.value[msgId]
+    if (block) block.stdout = text
   }
 
   return {
@@ -129,6 +150,9 @@ export const useProjectStore = defineStore('project', () => {
     selectedOutput,
     connectIO,
     elPositions,
-    ioPairs
+    ioPairs,
+    assignMsgId,
+    assignStatus,
+    assignStdout
   }
 })

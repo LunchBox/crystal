@@ -6,9 +6,6 @@ export default class Block extends Base {
     super()
     this.title = 'Block Name'
 
-    // this.args = ['arg0', 'arg1']
-    // this.argsMap = {}
-
     this.inputs = []
     this.outputs = []
 
@@ -17,9 +14,22 @@ export default class Block extends Base {
     this.values = {}
 
     this.func = null
+    this.namedArgs = false
+
     this.code = null
 
     this.seq = 0
+
+    // the message id of kernel
+    this.msgId = null
+    this.status = 'idle'
+    this.stdout = null
+  }
+
+  get msgIdx() {
+    if (!this.msgId) return '*'
+
+    return this.msgId.split('_').reverse()[0]
   }
 
   afterLoad() {
@@ -35,7 +45,7 @@ export default class Block extends Base {
   }
 
   delInput(idx) {
-    this.args.splice(idx, 1)
+    this.inputs.splice(idx, 1)
   }
 
   delOutput(idx) {
@@ -56,22 +66,33 @@ export default class Block extends Base {
   }
 
   fFunc() {
-    if (!this.func) return ''
+    if (!this.func) return 'None'
 
-    const sInputs = this.inputs.filter((inp) => inp.source !== null && inp.source !== undefined)
-    const inputs = sInputs.map((inp) => `${inp.label} = ${inp.source}`)
+    let inputs = []
+    if (this.namedArgs) {
+      const sInputs = this.inputs.filter((inp) => inp.source !== null && inp.source !== undefined)
+      inputs = sInputs.map((inp) => `${inp.label} = ${inp.source}`)
+    } else {
+      inputs = this.inputs.map((inp) => (inp.source ? inp.source : 'None'))
+    }
     return `${this.func}(${inputs.join(', ')})`
   }
 
   toCode() {
-    if (this.args.length === 0) {
-      return this.outputs
-        .map((output) => {
-          return `locals()['${this.id}_${output.id}'] = ${this.fVal(output)}`
-        })
-        .join('\r\n')
-    } else {
-      return this.fFunc()
+    const funcStr = this.fFunc()
+    if (this.outputs.length === 0) {
+      return funcStr
     }
+
+    const outputs = this.outputs.map((output) => {
+      let exp = 'None'
+      if (output.type === 'func_return') {
+        exp = funcStr
+      } else {
+        exp = this.fVal(output)
+      }
+      return `locals()['${this.id}_${output.id}'] = ${exp}`
+    })
+    return outputs.join('\r\n')
   }
 }

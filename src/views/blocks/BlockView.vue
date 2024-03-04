@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { INPUT_TYPES } from '@/models/block_output.js'
 
+import { run as runOnKernel } from '@/socket.js'
+
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
@@ -13,6 +15,7 @@ const props = defineProps(['block'])
 
 defineEmits(['edit', 'dragging'])
 
+// TODO: it changed the props data...
 function clearArg(input) {
   input.source = null
 }
@@ -68,6 +71,12 @@ function isOccupied(input) {
   return input.source
 }
 
+function run() {
+  console.log(props.block.toCode())
+  runOnKernel(props.block)
+}
+
+// ------------- io positions
 const blockRef = ref(null)
 const elRefs = ref({})
 
@@ -112,8 +121,9 @@ onBeforeUnmount(() => {
       @dblclick.prevent="$emit('edit', block)"
       @mousedown.prevent="$emit('dragging', block)"
     >
-      [{{ block._weight }}]
-      {{ block.title }}
+      [{{ block.msgIdx }}] {{ block.title }} {{ block.status }}
+
+      <a v-if="block.status === 'idle'" href="#" @click.prevent="run">Run</a>
     </div>
     <div class="block-content">
       <div class="block-inputs">
@@ -161,6 +171,9 @@ onBeforeUnmount(() => {
           ></span>
         </div>
       </div>
+    </div>
+    <div class="block-stdout">
+      <pre>{{ block.stdout }}</pre>
     </div>
   </div>
 </template>
