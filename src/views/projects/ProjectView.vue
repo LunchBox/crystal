@@ -14,16 +14,11 @@ import BlockView from '../blocks/BlockView.vue'
 import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
 
+import SVGBackground from './SVGBackground.vue'
+
 const store = useProjectStore()
-const {
-  canvasOffset,
-  project,
-  selectedInput,
-  selectedOutput,
-  ioPairs,
-  elPositions,
-  selectedBlocks
-} = storeToRefs(store)
+const { canvasOffset, project, selectedInput, selectedOutput, elPositions, selectedBlocks } =
+  storeToRefs(store)
 const { addBlock, delBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks } = store
 
 const blocks = computed(() => project.value.blocks)
@@ -196,22 +191,22 @@ onBeforeUnmount(() => {
   window.removeEventListener('mouseup', mouseup)
 })
 
-function curve(pair) {
-  const [output, input] = pair
+// function curve(pair) {
+//   const [output, input] = pair
 
-  if (!elPositions.value[output]) return
-  if (!elPositions.value[input]) return
+//   if (!elPositions.value[output]) return
+//   if (!elPositions.value[input]) return
 
-  const [ox, oy] = canvasOffset.value
+//   const [ox, oy] = canvasOffset.value
 
-  let { x: x1, y: y1 } = elPositions.value[output]
-  let { x: x2, y: y2 } = elPositions.value[input]
+//   let { x: x1, y: y1 } = elPositions.value[output]
+//   let { x: x2, y: y2 } = elPositions.value[input]
 
-  const md1 = Math.max((x1 + x2) / 2, x1 + Math.abs(y1 - y2))
-  const md2 = Math.min((x1 + x2) / 2, x2 - Math.abs(y1 - y2))
+//   const md1 = Math.max((x1 + x2) / 2, x1 + Math.abs(y1 - y2))
+//   const md2 = Math.min((x1 + x2) / 2, x2 - Math.abs(y1 - y2))
 
-  return `M ${x1} ${y1}, C ${md1} ${y1}, ${md2} ${y2}, ${x2} ${y2}`
-}
+//   return `M ${x1} ${y1}, C ${md1} ${y1}, ${md2} ${y2}, ${x2} ${y2}`
+// }
 
 function run() {
   blocks.value.forEach((b) => {
@@ -245,13 +240,7 @@ function run() {
   </div>
   <div class="canvas-outer" @contextmenu.prevent>
     <div class="block-wrapper" :style="canvasStyle">
-      <svg xmlns="http://www.w3.org/2000/svg">
-        <g :transform="`translate(${canvasOffset[0]}, ${canvasOffset[1]})`">
-          <g transform="translate(8, 8)" stroke-width="1.5" stroke="#999" fill="transparent">
-            <path v-for="pair in ioPairs" :d="curve(pair)" />
-          </g>
-        </g>
-      </svg>
+      <SVGBackground></SVGBackground>
 
       <BlockView
         v-for="block in blocks"
