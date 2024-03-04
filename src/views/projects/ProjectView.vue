@@ -245,7 +245,6 @@ function run() {
     <a href="" class="btn" @click.prevent="run">Run</a>
     <a href="" class="btn" @click.prevent="run">Run Block</a>
     <a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
-    {{ canvasOffset }}
   </div>
   <div style="position: absolute; z-index: 2">
     <AddBlock
