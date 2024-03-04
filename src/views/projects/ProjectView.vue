@@ -56,7 +56,16 @@ function onWheel(e) {
   }
 
   const delta = e.deltaY * unit
+  const os = canvasScale.value
   canvasScale.value += delta
+
+  const r = canvasScale.value / os
+
+  const { clientX, clientY } = e
+  const [ox, oy] = canvasOffset.value
+
+  canvasOffset.value[0] -= (clientX - ox) * (r - 1)
+  canvasOffset.value[1] -= (clientY - oy) * (r - 1)
 }
 
 // ---- dragging related
@@ -236,6 +245,7 @@ function run() {
     <a href="" class="btn" @click.prevent="run">Run</a>
     <a href="" class="btn" @click.prevent="run">Run Block</a>
     <a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
+    {{ canvasOffset }}
   </div>
   <div style="position: absolute; z-index: 2">
     <AddBlock
