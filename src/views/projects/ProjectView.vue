@@ -17,12 +17,22 @@ import EditBlock from '../blocks/EditBlock.vue'
 const store = useProjectStore()
 const { project, selectedInput, selectedOutput, ioPairs, elPositions, selectedBlocks } =
   storeToRefs(store)
-const { addBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks } = store
+const { addBlock, delBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks } = store
 
 const blocks = computed(() => project.value.blocks)
 
 const addingBlock = ref(false)
 const editingBlock = ref(null)
+
+function deleteBlocks() {
+  if (selectedBlocks.value.size > 0) {
+    const bs = [...selectedBlocks.value]
+    bs.forEach(delBlock)
+    clearSelectedBlocks()
+  }
+}
+
+// ---- dragging related
 
 const dragging = ref(false)
 const cloned = ref(false)
@@ -107,9 +117,10 @@ function run() {
 
 <template>
   <h2>{{ project.title }}</h2>
-  <div class="toolbar">
+  <div class="toolbar" @mousedown.stop>
     <a href="" class="btn" @click.prevent="save">Save</a>
     <a href="" class="btn" @click.prevent="addingBlock = true">Add Block</a>
+    <a href="#" class="btn" @click.prevent="deleteBlocks">Del Blocks</a>
     <a href="" class="btn" @click.prevent="run">Run</a>
     <a href="" class="btn" @click.prevent="run">Run Block</a>
   </div>

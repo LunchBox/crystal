@@ -120,7 +120,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="block" :style="bStyle" :class="{ selected: isBlockSelected(block) }" ref="blockRef">
+  <div
+    class="block"
+    :style="bStyle"
+    :class="{ selected: isBlockSelected(block) }"
+    ref="blockRef"
+    @contextmenu.prevent
+    @mousedown.meta.prevent.stop="$emit('mousedown-on-block', $event, block)"
+  >
     <div
       class="block-title"
       @dblclick.prevent="$emit('edit', block)"

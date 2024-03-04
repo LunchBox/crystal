@@ -53,10 +53,24 @@ export const useProjectStore = defineStore('project', () => {
     return selectedBlocks.value.has(block)
   }
 
-  // ---- block modification
+  // ---- block management
 
   function addBlock(block) {
     project.value.blocks.push(block)
+  }
+
+  function delBlock(block) {
+    const idx = blocks.value.indexOf(block)
+    if (idx > -1) {
+      block._outputs.forEach((ob) => {
+        ob.inputs.forEach((inp) => {
+          if (inp.source.startsWith(block.id)) {
+            inp.source = null
+          }
+        })
+      })
+      blocks.value.splice(idx, 1)
+    }
   }
 
   function updateBlock(id, block) {
@@ -192,6 +206,7 @@ export const useProjectStore = defineStore('project', () => {
     isBlockSelected,
 
     addBlock,
+    delBlock,
     updateBlock,
     save,
 
