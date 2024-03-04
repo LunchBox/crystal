@@ -7,19 +7,6 @@ export const state = reactive({
   connected: false
 })
 
-// function applyAttrs(obj, attrs) {
-//   Object.keys(attrs).forEach((k) => {
-//     if (k === 'id') return
-//     if (obj[k] === null || obj[k] === undefined) {
-//       obj[k] = attrs[k]
-//     } else if (attrs[k] && typeof attrs[k] === 'object') {
-//       applyAttrs(obj[k], attrs[k])
-//     } else {
-//       obj[k] = attrs[k]
-//     }
-//   })
-// }
-
 export const useProjectStore = defineStore('project', () => {
   const project = ref(null)
   const blocks = computed(() => project.value.blocks)

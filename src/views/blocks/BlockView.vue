@@ -95,10 +95,10 @@ const config = { attributes: true, childList: true, subtree: true }
 const callback = function (mutationsList, observer) {
   for (const mutation of mutationsList) {
     if (mutation.type === 'childList') {
-      // console.log('A child node has been added or removed.')
+      console.log('A child node has been added or removed.')
       updatePositions()
     } else if (mutation.type === 'attributes') {
-      // console.log('A ' + mutation.attributeName + ' attribute was modified.')
+      console.log('A ' + mutation.attributeName + ' attribute was modified.')
       updatePositions()
     }
   }
@@ -120,16 +120,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    class="block"
-    :style="bStyle"
-    :class="{ selected: isBlockSelected(block) }"
-    ref="blockRef"
-    @contextmenu.prevent
-    @mousedown.meta.prevent.stop="$emit('mousedown-on-block', $event, block)"
-  >
+  <div class="block" ref="blockRef" :style="bStyle" :class="{ selected: isBlockSelected(block) }">
     <div
       class="block-title"
+      :ref="(el) => (elRefs[`${block.id}`] = el)"
       @dblclick.prevent="$emit('edit', block)"
       @contextmenu.prevent
       @mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)"
@@ -195,6 +189,12 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
 .block {
   position: absolute;
   padding: 0.25rem;

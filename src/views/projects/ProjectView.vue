@@ -37,12 +37,38 @@ function deleteBlocks() {
 const dragging = ref(false)
 const cloned = ref(false)
 
-function mousdown() {
+const selecting = ref(false)
+const startPos = ref(null)
+const currentPos = ref(null)
+
+const selectionBoxStyle = computed(() => {
+  if (!startPos.value || !currentPos.value) return {}
+
+  const [x1, y1] = startPos.value
+  const [x2, y2] = currentPos.value
+  return {
+    top: Math.min(y1, y2) + 'px',
+    left: Math.min(x1, x2) + 'px',
+    width: Math.abs(x2 - x1) + 'px',
+    height: Math.abs(y2 - y1) + 'px'
+  }
+})
+
+function mousdown(e) {
   cloned.value = false
   clearSelectedBlocks()
+
+  // only activate on left click
+  if (e.button === 0) {
+    selecting.value = true
+    const { clientX: x, clientY: y } = e
+    startPos.value = [x, y]
+  }
 }
 
 function mousedownOnBlock(e, block) {
+  if (e.button !== 0) return
+
   if (!isBlockSelected(block)) {
     if (e.ctrlKey) {
       toggleBlock(block)
@@ -54,33 +80,74 @@ function mousedownOnBlock(e, block) {
   dragging.value = true
 }
 
+function cloneSelections() {
+  const clones = [...selectedBlocks.value].map((b) => b.clone())
+  clearSelectedBlocks()
+  clones.forEach((b) => {
+    addBlock(b)
+    toggleBlock(b)
+  })
+  cloned.value = true
+}
+
+function moveSelections(e) {
+  const blocks = [...selectedBlocks.value]
+  blocks.forEach((block) => {
+    const pos = block.position
+    if (pos) {
+      pos[0] += e.movementX
+      pos[1] += e.movementY
+    }
+  })
+}
+
 function mousemove(e) {
+  // only count left button
   if (dragging.value && selectedBlocks.value.size > 0) {
     // clone blocks on ctrl + drag
     if (e.ctrlKey && !cloned.value) {
-      const clones = [...selectedBlocks.value].map((b) => b.clone())
-      clearSelectedBlocks()
-      clones.forEach((b) => {
-        addBlock(b)
-        toggleBlock(b)
-      })
-      cloned.value = true
-      return
+      return cloneSelections()
     }
 
-    const blocks = [...selectedBlocks.value]
-    blocks.forEach((block) => {
-      const pos = block.position
-      if (pos) {
-        pos[0] += e.movementX
-        pos[1] += e.movementY
-      }
-    })
+    moveSelections(e)
+  }
+
+  if (selecting.value) {
+    const { clientX: x, clientY: y } = e
+    currentPos.value = [x, y]
   }
 }
 
+function selectBlocksInRange() {
+  if (!startPos.value || !currentPos.value) return
+
+  const [x1, y1] = startPos.value
+  const [x2, y2] = currentPos.value
+
+  const mx = Math.min(x1, x2)
+  const my = Math.min(y1, y2)
+  const mw = Math.abs(x1 - x2)
+  const mh = Math.abs(y1 - y2)
+
+  const inRangeBlocks = blocks.value.filter((b) => {
+    const rect = elPositions.value[b.id]
+    if (!rect) return false
+    const { x, y, width, height } = rect
+    return x + width > mx && x < mx + mw && y + height > my && y < my + mh
+  })
+
+  clearSelectedBlocks()
+  inRangeBlocks.forEach(toggleBlock)
+}
+
 function mouseup() {
+  selectBlocksInRange()
+
   dragging.value = false
+
+  selecting.value = false
+  startPos.value = null
+  currentPos.value = null
 }
 
 onMounted(() => {
@@ -105,7 +172,10 @@ function curve(pair) {
   let { x: x1, y: y1 } = elPositions.value[output]
   let { x: x2, y: y2 } = elPositions.value[input]
 
-  return `M ${x1} ${y1}, C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`
+  const md1 = Math.max((x1 + x2) / 2, x1 + Math.abs(y1 - y2))
+  const md2 = Math.min((x1 + x2) / 2, x2 - Math.abs(y1 - y2))
+
+  return `M ${x1} ${y1}, C ${md1} ${y1}, ${md2} ${y2}, ${x2} ${y2}`
 }
 
 function run() {
@@ -138,7 +208,7 @@ function run() {
       @success="editingBlock = null"
     ></EditBlock>
   </div>
-  <div class="block-wrapper">
+  <div class="block-wrapper prevent-select">
     <svg xmlns="http://www.w3.org/2000/svg">
       <g transform="translate(8, 8)" stroke-width="1.5" stroke="#999" fill="transparent">
         <path v-for="pair in ioPairs" :d="curve(pair)" />
@@ -154,6 +224,7 @@ function run() {
     >
     </BlockView>
   </div>
+  <div v-if="startPos && currentPos" class="selection-box" :style="selectionBoxStyle"></div>
 </template>
 
 <style scoped>
@@ -169,6 +240,17 @@ svg {
   height: 100%;
   display: block;
   margin: 0;
+}
+
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.selection-box {
+  position: absolute;
+  border: 1px solid green;
 }
 
 .block-wrapper {
