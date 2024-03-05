@@ -1,6 +1,8 @@
 import Base from './base.js'
 import Block from './block.js'
 
+import { BlockModels } from '@/lib/core_blocks/v1/models.js'
+
 export default class Project extends Base {
   constructor() {
     super()
@@ -12,7 +14,8 @@ export default class Project extends Base {
 
   afterLoad() {
     this.blocks = this.blocks.map((obj) => {
-      return new Block().load(obj)
+      const constructor = BlockModels[obj.type] || Block
+      return new constructor().load(obj)
     })
   }
 }

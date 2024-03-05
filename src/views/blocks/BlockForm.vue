@@ -102,10 +102,17 @@ function onSubmit() {
         </label>
       </div>
 
-      <div>
+      <!-- <div>
         <label>
           <span>Code</span>
           <textarea v-model="formData.code"></textarea>
+        </label>
+      </div> -->
+
+      <div>
+        <label>
+          <span>Content</span>
+          <textarea v-model="formData.content"></textarea>
         </label>
       </div>
 

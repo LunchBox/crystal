@@ -129,12 +129,13 @@ onBeforeUnmount(() => {
         @contextmenu.prevent
         @mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)"
       >
-        [{{ block.msgIdx }}] {{ block.title }} {{ block.status }}
+        [{{ block.msgIdx }}] {{ block.title }}
       </span>
 
-      <a v-if="block.status === 'idle'" href="#" @click.prevent="run" style="margin-left: 0.25rem">
-        Run
-      </a>
+      <template v-if="block.runnable">
+        <span> {{ block.status }}</span>
+        <a v-if="block.status === 'idle'" href="#" @click.prevent="run"> Run </a>
+      </template>
     </div>
     <div class="block-content">
       <div class="block-inputs">
@@ -183,6 +184,9 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+
+    <slot></slot>
+
     <div class="block-stdout">
       <pre>{{ block.stdout }}</pre>
     </div>
@@ -205,6 +209,9 @@ onBeforeUnmount(() => {
 
 .block-title {
   white-space: nowrap;
+  display: flex;
+  gap: 0 0.25rem;
+  align-items: baseline;
 }
 
 .block-content {

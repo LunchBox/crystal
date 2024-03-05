@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { defineAsyncComponent } from 'vue'
 
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
@@ -10,11 +11,19 @@ import NumberBlock from '@/models/number_block'
 
 import BlockInput from '@/models/block_input.js'
 
-import BlockView from '../blocks/BlockView.vue'
+// import BlockView from '../blocks/BlockView.vue'
 import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
 
 import SVGBackground from './SVGBackground.vue'
+
+import Comment from '@/lib/core_blocks/v1/comment/model.js'
+
+import { ViewComponents } from '@/lib/core_blocks/v1/views.js'
+
+// import CommentView from '@/lib/core_blocks/v1/comment/BlockView.vue'
+
+// console.log(new Comment())
 
 const store = useProjectStore()
 const {
@@ -57,6 +66,18 @@ function deleteBlocks() {
 function resetCanvas() {
   canvasScale.value = 1
   canvasOffset.value = [0, 0]
+}
+
+// ---- block views
+
+const DefaultBlockView = defineAsyncComponent(() => import(`@/views/blocks/BlockView.vue`))
+
+function getBlockView(type) {
+  return ViewComponents[type] || DefaultBlockView
+}
+
+function addCommentBlock() {
+  addBlock(new Comment())
 }
 
 // ---- scale
@@ -260,6 +281,8 @@ function run() {
     <a href="" class="btn" @click.prevent="run">Run</a>
     <a href="" class="btn" @click.prevent="run">Run Block</a>
     <a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
+
+    <a href="" class="btn" @click.prevent="addCommentBlock">Add Comment</a>
   </div>
   <div style="position: absolute; z-index: 2">
     <AddBlock
@@ -280,14 +303,15 @@ function run() {
   <div class="canvas-outer" @contextmenu.prevent @wheel="onWheel" @mousedown="mousedownOnCanvas">
     <SVGBackground></SVGBackground>
     <div class="block-wrapper" :style="canvasStyle">
-      <BlockView
+      <component
         v-for="block in blocks"
+        :is="getBlockView(block.type)"
         :block="block"
         :key="block.id"
         @edit="editBlock"
         @mousedown-on-block="mousedownOnBlock"
       >
-      </BlockView>
+      </component>
     </div>
   </div>
   <div v-if="startPos && currentPos" class="selection-box" :style="selectionBoxStyle"></div>

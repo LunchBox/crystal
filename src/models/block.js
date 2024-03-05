@@ -6,15 +6,20 @@ export default class Block extends Base {
     super()
     this.title = 'Block Name'
 
+    this.type = 'block'
+
     this.inputs = []
     this.outputs = []
 
-    this.position = [0, 0]
+    this.position = [100, 100]
 
     this.values = {}
 
     this.func = null
     this.namedArgs = false
+
+    this.content = null
+    this.runnable = true
 
     this.code = null
 
