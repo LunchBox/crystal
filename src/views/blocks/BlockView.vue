@@ -189,6 +189,9 @@ onBeforeUnmount(() => {
 
     <slot></slot>
 
+    <div class="block-stderr">
+      <pre>{{ block.stderr }}</pre>
+    </div>
     <div class="block-stdout">
       <pre>{{ block.stdout }}</pre>
     </div>
@@ -203,10 +206,6 @@ onBeforeUnmount(() => {
   position: absolute;
   padding: 0.25rem;
   border: 2px solid transparent;
-}
-.block.selected {
-  border-color: orange;
-  z-index: 1;
 }
 
 .block-title {
@@ -223,6 +222,14 @@ onBeforeUnmount(() => {
   background: rgba(255, 255, 255, 0.75);
 }
 
+.block.selected {
+  z-index: 10;
+}
+.block.selected .block-content {
+  border-color: orange;
+  z-index: 1;
+}
+
 .block-input,
 .block-output {
   display: flex;
@@ -234,6 +241,10 @@ onBeforeUnmount(() => {
 .block-output {
   text-align: right;
   justify-content: flex-end;
+}
+
+.block-stderr {
+  color: red;
 }
 
 .indicator {

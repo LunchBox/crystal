@@ -29,6 +29,7 @@ export default class Block extends Base {
     this.msgId = null
     this.status = 'idle'
     this.stdout = null
+    this.stderr = null
     this.displayData = null
   }
 
