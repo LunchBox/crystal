@@ -4,7 +4,7 @@ export default class extends Block {
   constructor() {
     super()
     this.title = 'function map'
-    this.type = 'core_blocks/v1/func_mapping'
+    this.type = 'core_blocks/func_mapping'
     this.runnable = true
   }
 
