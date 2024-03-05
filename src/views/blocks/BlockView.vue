@@ -73,7 +73,9 @@ function isOccupied(input) {
 
 function run() {
   console.log(props.block.toCode())
-  runOnKernel(props.block)
+  if (props.block.status === 'idle') {
+    runOnKernel(props.block)
+  }
 }
 
 // ------------- io positions
@@ -134,7 +136,7 @@ onBeforeUnmount(() => {
 
       <template v-if="block.runnable">
         <span> {{ block.status }}</span>
-        <a v-if="block.status === 'idle'" href="#" @click.prevent="run"> Run </a>
+        <a href="#" @click.prevent="run"> Run </a>
       </template>
     </div>
     <div class="block-content">
@@ -218,6 +220,7 @@ onBeforeUnmount(() => {
   border: 1px solid #ccc;
   display: inline-flex;
   gap: 0 0.5rem;
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .block-input,
