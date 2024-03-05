@@ -52,14 +52,14 @@ function onSubmit() {
 <template>
   <form @submit.prevent.stop="onSubmit">
     <div>
-      <div>
+      <div class="field">
         <label>
           <span>Title</span>
           <input type="text" v-model="formData.title" />
         </label>
       </div>
 
-      <div>
+      <div class="field">
         <label>Args</label>
         <div v-for="(input, idx) in formData.inputs">
           <input type="text" v-model="formData.inputs[idx].label" />
@@ -68,13 +68,13 @@ function onSubmit() {
         <button @click.prevent="addInput">Add Input</button>
       </div>
 
-      <div>
+      <div class="field">
         <label>
           <input type="checkbox" v-model="formData.namedArgs" /> use named args in function
         </label>
       </div>
 
-      <div>
+      <div class="field">
         <label>Outputs</label>
         <div v-for="(output, outputIdx) in formData.outputs">
           <input type="text" v-model="formData.outputs[outputIdx].label" required />
@@ -95,21 +95,21 @@ function onSubmit() {
         <button @click.prevent="addOutput">Add Output</button>
       </div>
 
-      <div>
+      <div class="field">
         <label>
           <span>Func</span>
           <input type="text" v-model="formData.func" />
         </label>
       </div>
 
-      <div>
-        <label>
-          <span>Code</span>
-          <textarea v-model="formData.code"></textarea>
-        </label>
-      </div>
+      <!-- <div>
+          <label>
+            <span>Code</span>
+            <textarea v-model="formData.code"></textarea>
+          </label>
+        </div> -->
 
-      <div>
+      <div class="actions">
         <input type="submit" value="Save" />
         <a href="#" @click.prevent="$emit('cancel')">Cancel</a>
       </div>
@@ -118,6 +118,16 @@ function onSubmit() {
 </template>
 
 <style scoped>
+.field {
+  margin: 0.5rem 0;
+}
+
+label {
+  display: block;
+}
+label > span {
+  display: block;
+}
 textarea {
   display: block;
   box-sizing: border-box;

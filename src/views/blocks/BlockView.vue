@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
   <div class="block" ref="blockRef" :style="bStyle" :class="{ selected: isBlockSelected(block) }">
     <div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)">
       <span
-        @dblclick.prevent="$emit('edit', block)"
+        @dblclick.prevent="$emit('edit', $event, block)"
         @contextmenu.prevent
         @mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)"
       >
@@ -229,9 +229,9 @@ onBeforeUnmount(() => {
 
 .indicator {
   display: block;
-  width: 1rem;
-  height: 1rem;
-  border: 1px solid gray;
+  width: 8px;
+  height: 8px;
+  background: #ccc;
 }
 
 .indicator.occupied {
@@ -244,5 +244,17 @@ onBeforeUnmount(() => {
 
 pre {
   font-size: 0.625rem;
+}
+
+input,
+select,
+textarea {
+  background: #efefef;
+  border: none;
+  box-sizing: border-box;
+  display: inline-block;
+  margin: 2px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 </style>

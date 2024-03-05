@@ -5,8 +5,9 @@ import Block from '@/models/block.js'
 import { useProjectStore } from '@/stores/project.js'
 
 import BlockForm from './BlockForm.vue'
+import DraggablePanel from '@/views/DraggablePanel.vue'
 
-const props = defineProps(['block'])
+const props = defineProps(['block', 'pos'])
 
 const emit = defineEmits(['success', 'cancel'])
 
@@ -20,8 +21,15 @@ function onSubmit(blockData) {
 </script>
 
 <template>
-  <div>Edit Block</div>
-  <BlockForm :block="block" @submit="onSubmit" @cancel="$emit('cancel')"></BlockForm>
+  <DraggablePanel @close="$emit('cancel')" :pos="pos">
+    <template #header>
+      <div>Edit Block</div>
+    </template>
+
+    <template #default>
+      <BlockForm :block="block" @submit="onSubmit" @cancel="$emit('cancel')"></BlockForm>
+    </template>
+  </DraggablePanel>
 </template>
 
 <style scoped></style>

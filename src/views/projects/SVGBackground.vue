@@ -34,7 +34,7 @@ function curve(pair) {
         stroke="#ccc"
         transform="translate(0, 0)"
       ></rect>
-      <g transform="translate(8, 8)" stroke-width="1.5" stroke="#999" fill="transparent">
+      <g transform="translate(4, 4)" stroke-width="1.5" stroke="#999" fill="transparent">
         <path v-for="pair in ioPairs" :d="curve(pair)" />
       </g>
     </g>

@@ -32,6 +32,19 @@ const blocks = computed(() => project.value.blocks)
 
 const addingBlock = ref(false)
 const editingBlock = ref(null)
+const editingPos = ref(null)
+
+function editBlock(e, block) {
+  editingBlock.value = block
+
+  const { clientX: x, clientY: y } = e
+  editingPos.value = { x, y }
+}
+
+function resetAfterEdit() {
+  editingBlock.value = null
+  editingPos.value = null
+}
 
 function deleteBlocks() {
   if (selectedBlocks.value.size > 0) {
@@ -103,7 +116,9 @@ const selectionBoxStyle = computed(() => {
 function mousdown(e) {
   cloned.value = false
   clearSelectedBlocks()
+}
 
+function mousedownOnCanvas(e) {
   // only activate on left click
   if (e.button === 0) {
     selecting.value = true
@@ -256,19 +271,20 @@ function run() {
     <EditBlock
       v-if="editingBlock"
       :block="editingBlock"
-      @cancel="editingBlock = null"
-      @success="editingBlock = null"
+      :pos="editingPos"
+      @cancel="resetAfterEdit"
+      @success="resetAfterEdit"
     ></EditBlock>
   </div>
 
-  <div class="canvas-outer" @contextmenu.prevent @wheel="onWheel">
+  <div class="canvas-outer" @contextmenu.prevent @wheel="onWheel" @mousedown="mousedownOnCanvas">
     <SVGBackground></SVGBackground>
     <div class="block-wrapper" :style="canvasStyle">
       <BlockView
         v-for="block in blocks"
         :block="block"
         :key="block.id"
-        @edit="editingBlock = block"
+        @edit="editBlock"
         @mousedown-on-block="mousedownOnBlock"
       >
       </BlockView>
