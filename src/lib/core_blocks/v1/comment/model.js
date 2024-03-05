@@ -9,6 +9,6 @@ export default class Comment extends Block {
   }
 
   toCode() {
-    return ['"""', this.code, '"""'].join('\r\n')
+    return ['"""', this.content, '"""'].join('\r\n')
   }
 }

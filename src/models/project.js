@@ -1,7 +1,7 @@
 import Base from './base.js'
 import Block from './block.js'
 
-import { BlockModels } from '@/lib/core_blocks/v1/models.js'
+import CoreBlocks from '@/lib/core_blocks/v1/models.js'
 
 export default class Project extends Base {
   constructor() {
@@ -14,7 +14,7 @@ export default class Project extends Base {
 
   afterLoad() {
     this.blocks = this.blocks.map((obj) => {
-      const constructor = BlockModels[obj.type] || Block
+      const constructor = CoreBlocks[obj.type] || Block
       return new constructor().load(obj)
     })
   }

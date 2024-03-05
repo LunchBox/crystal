@@ -85,6 +85,8 @@ export const useProjectStore = defineStore('project', () => {
   project.value = new Project().load(data)
   arrangeBlocks()
 
+  console.log(project)
+
   function save() {
     const pj = project.value
     if (!pj) return

@@ -51,6 +51,7 @@ function onSubmit() {
 
 <template>
   <form @submit.prevent.stop="onSubmit">
+    <div>type: {{ formData.type }}</div>
     <div>
       <div class="field">
         <label>
@@ -95,12 +96,12 @@ function onSubmit() {
         <button @click.prevent="addOutput">Add Output</button>
       </div>
 
-      <div class="field">
+      <!-- <div class="field">
         <label>
           <span>Func</span>
           <input type="text" v-model="formData.func" />
         </label>
-      </div>
+      </div> -->
 
       <!-- <div>
         <label>

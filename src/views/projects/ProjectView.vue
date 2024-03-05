@@ -17,9 +17,10 @@ import EditBlock from '../blocks/EditBlock.vue'
 
 import SVGBackground from './SVGBackground.vue'
 
-import Comment from '@/lib/core_blocks/v1/comment/model.js'
+// import Comment from '@/lib/core_blocks/v1/comment/model.js'
 
-import { ViewComponents } from '@/lib/core_blocks/v1/views.js'
+import CoreBlocks from '@/lib/core_blocks/v1/models.js'
+import ViewComponents from '@/lib/core_blocks/v1/views.js'
 
 // import CommentView from '@/lib/core_blocks/v1/comment/BlockView.vue'
 
@@ -76,8 +77,12 @@ function getBlockView(type) {
   return ViewComponents[type] || DefaultBlockView
 }
 
-function addCommentBlock() {
-  addBlock(new Comment())
+// function addCommentBlock() {
+//   addBlock(new Comment())
+// }
+
+function addBlockByType(type) {
+  addBlock(new CoreBlocks[type]())
 }
 
 // ---- scale
@@ -282,7 +287,9 @@ function run() {
     <a href="" class="btn" @click.prevent="run">Run Block</a>
     <a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
 
-    <a href="" class="btn" @click.prevent="addCommentBlock">Add Comment</a>
+    <a v-for="(v, k) in CoreBlocks" href="" class="btn" @click.prevent="addBlockByType(k)">
+      Add {{ k.split('/').pop() }}
+    </a>
   </div>
   <div style="position: absolute; z-index: 2">
     <AddBlock
