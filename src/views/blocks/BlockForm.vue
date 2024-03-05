@@ -102,12 +102,12 @@ function onSubmit() {
         </label>
       </div>
 
-      <!-- <div>
-          <label>
-            <span>Code</span>
-            <textarea v-model="formData.code"></textarea>
-          </label>
-        </div> -->
+      <div>
+        <label>
+          <span>Code</span>
+          <textarea v-model="formData.code"></textarea>
+        </label>
+      </div>
 
       <div class="actions">
         <input type="submit" value="Save" />

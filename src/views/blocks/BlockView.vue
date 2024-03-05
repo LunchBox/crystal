@@ -205,7 +205,6 @@ onBeforeUnmount(() => {
 
 .block-title {
   white-space: nowrap;
-  cursor: move;
 }
 
 .block-content {

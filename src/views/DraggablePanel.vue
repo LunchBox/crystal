@@ -94,5 +94,7 @@ onBeforeUnmount(() => {
 
 .panel-content {
   padding: 0.5rem;
+  max-height: 50vh;
+  overflow-y: scroll;
 }
 </style>
