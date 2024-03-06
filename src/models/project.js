@@ -1,7 +1,7 @@
 import Base from './base.js'
 import Block from './block.js'
 
-import CoreBlocks from '@/lib/core_blocks/v1/models.js'
+import CoreBlocks from '@/lib/core_blocks/v1/models'
 
 export default class Project extends Base {
   constructor() {

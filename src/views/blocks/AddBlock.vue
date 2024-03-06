@@ -15,22 +15,22 @@ const { addBlock } = store
 const block = ref(new Block())
 
 function onSubmit(blockData) {
-  addBlock(blockData)
-  block.value = new Block()
-  emit('success')
+	addBlock(blockData)
+	block.value = new Block()
+	emit('success')
 }
 </script>
 
 <template>
-  <DraggablePanel @close="$emit('cancel')">
-    <template #header>
-      <div>Add Block</div>
-    </template>
+	<DraggablePanel @close="$emit('cancel')">
+		<template #header>
+			<div>Add Block</div>
+		</template>
 
-    <template #default>
-      <BlockForm :block="block" @submit="onSubmit" @cancel="$emit('cancel')"></BlockForm>
-    </template>
-  </DraggablePanel>
+		<template #default>
+			<BlockForm :block="block" @submit="onSubmit" @cancel="$emit('cancel')"></BlockForm>
+		</template>
+	</DraggablePanel>
 </template>
 
 <style scoped></style>

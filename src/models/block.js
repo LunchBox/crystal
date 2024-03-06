@@ -72,6 +72,12 @@ export default class Block extends Base {
     this.outputs.splice(idx, 1)
   }
 
+  // TODO: should not be that simple
+  setOutputValue(label, val) {
+    console.log(label)
+    // this.values[label] = val
+  }
+
   delOutputOption(outputIdx, optIdx) {
     this.outputs[outputIdx].options.splice(optIdx, 1)
   }
