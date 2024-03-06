@@ -125,7 +125,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="block" ref="blockRef" :style="bStyle" :class="[{ selected: isBlockSelected(block) }, block.status]">
+	<div class="block" ref="blockRef" :style="bStyle" :class="[{ selected: isBlockSelected(block) }, block.status]"
+		@mousedown.prevent.stop>
 		<div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)" @contextmenu.prevent
 			@mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)">
 
@@ -191,6 +192,7 @@ onBeforeUnmount(() => {
 	padding: 0.25rem;
 	border: 2px solid rgba(0, 0, 0, 0.2);
 	border-radius: 3px;
+	max-width: 300px;
 }
 
 .block.busy {
