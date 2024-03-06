@@ -73,9 +73,9 @@ function isOccupied(input) {
 
 function run() {
 	console.log(props.block.toCode())
-	if (props.block.status === 'idle') {
-		runOnKernel(props.block)
-	}
+	// if (props.block.status === 'idle') {
+	runOnKernel(props.block)
+	// }
 }
 
 // ------------- io positions
@@ -125,16 +125,16 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="block" ref="blockRef" :style="bStyle" :class="{ selected: isBlockSelected(block) }">
-		<div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)">
-			<span @dblclick.prevent="$emit('edit', $event, block)" @contextmenu.prevent
-				@mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)">
+	<div class="block" ref="blockRef" :style="bStyle" :class="[{ selected: isBlockSelected(block) }, block.status]">
+		<div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)" @contextmenu.prevent
+			@mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)">
+
+			<span @dblclick.prevent="$emit('edit', $event, block)">
 				[{{ block.msgIdx }}] {{ block.title }}
 			</span>
 
 			<template v-if="block.runnable">
-				<span> {{ block.status }}</span>
-				<a href="#" @click.prevent="run"> Run </a>
+				<a href="#" @mousedown.stop @click.prevent="run"> Run </a>
 			</template>
 		</div>
 		<div class="block-content">
@@ -193,11 +193,21 @@ onBeforeUnmount(() => {
 	border-radius: 3px;
 }
 
+.block.busy {
+	background: #ccc;
+}
+
+.block.selected {
+	border-color: orange;
+}
+
 .block-title {
 	white-space: nowrap;
 	display: flex;
 	gap: 0 0.25rem;
 	align-items: baseline;
+
+	cursor: default;
 }
 
 .block-content {
@@ -207,11 +217,6 @@ onBeforeUnmount(() => {
 
 .block.selected {
 	z-index: 10;
-}
-
-.block.selected .block-content {
-	border-color: orange;
-	z-index: 1;
 }
 
 .block-outputs {
