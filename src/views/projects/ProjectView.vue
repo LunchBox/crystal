@@ -59,13 +59,22 @@ function resetCanvas() {
 
 const DefaultBlockView = defineAsyncComponent(() => import(`@/views/blocks/BlockView.vue`))
 
+const addingBlockType = ref(null)
+
 function getBlockView(type) {
 	return ViewComponents[type] || DefaultBlockView
 }
 
-// function addCommentBlock() {
-//   addBlock(new Comment())
-// }
+function mouseupOnAddingBlock(e) {
+	if (addingBlockType.value !== null) {
+		const b = new CoreBlocks[addingBlockType.value]()
+		const { clientX: x, clientY: y } = e
+		b.position = [x, y]
+		addBlock(b)
+
+		addingBlockType.value = null
+	}
+}
 
 function addBlockByType(type) {
 	addBlock(new CoreBlocks[type]())
@@ -248,12 +257,14 @@ onMounted(() => {
 	window.addEventListener('mousedown', mousdown)
 	document.addEventListener('mousemove', mousemove)
 	window.addEventListener('mouseup', mouseup)
+	window.addEventListener('mouseup', mouseupOnAddingBlock)
 })
 
 onBeforeUnmount(() => {
 	window.removeEventListener('mousedown', mousdown)
 	document.removeEventListener('mousemove', mousemove)
 	window.removeEventListener('mouseup', mouseup)
+	window.removeEventListener('mouseup', mouseupOnAddingBlock)
 })
 
 function run() {
@@ -273,7 +284,7 @@ function run() {
 		<a href="" class="btn" @click.prevent="run">Run Block</a>
 		<a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
 
-		<a v-for="(v, k) in CoreBlocks" :key="k" href="#" class="btn" @click.prevent="addBlockByType(k)">
+		<a v-for="(v, k) in CoreBlocks" :key="k" href="#" class="btn" @mousedown.prevent.stop="addingBlockType = k">
 			Add {{ k.split('/').pop() }}
 		</a>
 	</div>
