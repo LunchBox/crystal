@@ -9,6 +9,7 @@ import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
 
 import SVGBackground from './SVGBackground.vue'
+import SearchBox from '@/views/SearchBox.vue'
 
 import CoreBlocks from '@/lib/core_blocks/v1/models'
 import ViewComponents from '@/lib/core_blocks/v1/views'
@@ -265,6 +266,8 @@ onMounted(() => {
 	document.addEventListener('mousemove', mousemove)
 
 	window.addEventListener('mouseup', mouseup)
+
+	window.addEventListener('keydown', dismissSearchBox)
 })
 
 onBeforeUnmount(() => {
@@ -272,12 +275,37 @@ onBeforeUnmount(() => {
 	document.removeEventListener('mousemove', mousemove)
 
 	window.removeEventListener('mouseup', mouseup)
+
+	window.removeEventListener('keydown', dismissSearchBox)
 })
 
 function run() {
 	blocks.value.forEach((b) => {
 		console.log(b.toCode())
 	})
+}
+
+
+
+
+// ---- search box
+
+const searching = ref(false)
+const searchBoxPos = ref(null)
+
+function activateSearchBox(e) {
+	searching.value = true
+
+	const { clientX, clientY } = e
+
+	searchBoxPos.value = { x: clientX - 14, y: clientY - 18 }
+}
+
+function dismissSearchBox(e) {
+	if (e.key === 'Escape') {
+		searching.value = false
+		searchBoxPos.value = null
+	}
 }
 </script>
 
@@ -302,13 +330,17 @@ function run() {
 			@success="resetAfterEdit"></EditBlock>
 	</div>
 
-	<div class="canvas-outer" ref="canvasOuter" @contextmenu.prevent @wheel="onWheel" @mousedown="mousedownOnCanvas">
+	<div class="canvas-outer" ref="canvasOuter" @dblclick="activateSearchBox" @contextmenu.prevent @wheel="onWheel"
+		@mousedown="mousedownOnCanvas">
 		<SVGBackground></SVGBackground>
+
 		<div class="block-wrapper" :style="canvasStyle">
 			<component v-for="block in blocks" :is="getBlockView(block.type)" :block="block" :key="block.id" @edit="editBlock"
 				@mousedown-on-block="mousedownOnBlock">
 			</component>
 		</div>
+
+		<SearchBox v-if="searching" :pos="searchBoxPos"></SearchBox>
 	</div>
 	<div v-if="startPos && currentPos" class="selection-box" :style="selectionBoxStyle"></div>
 </template>
