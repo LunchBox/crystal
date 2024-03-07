@@ -254,20 +254,24 @@ function mouseup() {
 	selecting.value = false
 	startPos.value = null
 	currentPos.value = null
+
+	mouseupOnAddingBlock()
 }
+
+const canvasOuter = ref(null)
 
 onMounted(() => {
 	window.addEventListener('mousedown', mousdown)
 	document.addEventListener('mousemove', mousemove)
+
 	window.addEventListener('mouseup', mouseup)
-	window.addEventListener('mouseup', mouseupOnAddingBlock)
 })
 
 onBeforeUnmount(() => {
 	window.removeEventListener('mousedown', mousdown)
 	document.removeEventListener('mousemove', mousemove)
+
 	window.removeEventListener('mouseup', mouseup)
-	window.removeEventListener('mouseup', mouseupOnAddingBlock)
 })
 
 function run() {
@@ -298,7 +302,7 @@ function run() {
 			@success="resetAfterEdit"></EditBlock>
 	</div>
 
-	<div class="canvas-outer" @contextmenu.prevent @wheel="onWheel" @mousedown="mousedownOnCanvas">
+	<div class="canvas-outer" ref="canvasOuter" @contextmenu.prevent @wheel="onWheel" @mousedown="mousedownOnCanvas">
 		<SVGBackground></SVGBackground>
 		<div class="block-wrapper" :style="canvasStyle">
 			<component v-for="block in blocks" :is="getBlockView(block.type)" :block="block" :key="block.id" @edit="editBlock"
