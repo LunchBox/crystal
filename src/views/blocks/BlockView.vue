@@ -140,7 +140,8 @@ function mousedownOnBlock(e) {
 </script>
 
 <template>
-	<div class="block" ref="blockRef" :style="bStyle" :class="bClass" @mousedown.left.stop="mousedownOnBlock">
+	<div class="block" ref="blockRef" :style="bStyle" :class="bClass" @dblclick.stop
+		@mousedown.left.stop="mousedownOnBlock">
 		<div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)" @contextmenu.prevent
 			@mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)">
 

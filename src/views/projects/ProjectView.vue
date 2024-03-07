@@ -64,6 +64,7 @@ function getBlockView(type) {
 	return ViewComponents[type] || DefaultBlockView
 }
 
+// 放開鼠標時 drop 新的 block 到鼠標的位置
 function mouseupOnAddingBlock(e) {
 	if (addingBlockType.value !== null) {
 		const b = new CoreBlocks[addingBlockType.value]()
@@ -76,12 +77,9 @@ function mouseupOnAddingBlock(e) {
 		addBlock(b)
 
 		addingBlockType.value = null
+		document.body.style.cursor = "auto"
 	}
 }
-
-// function addBlockByType(type) {
-// 	addBlock(new CoreBlocks[type]())
-// }
 
 // ---- scale
 
@@ -267,7 +265,7 @@ onMounted(() => {
 
 	window.addEventListener('mouseup', mouseup)
 
-	window.addEventListener('keydown', dismissSearchBox)
+	window.addEventListener('keydown', dismissSearchBoxOnEsc)
 })
 
 onBeforeUnmount(() => {
@@ -276,7 +274,7 @@ onBeforeUnmount(() => {
 
 	window.removeEventListener('mouseup', mouseup)
 
-	window.removeEventListener('keydown', dismissSearchBox)
+	window.removeEventListener('keydown', dismissSearchBoxOnEsc)
 })
 
 function run() {
@@ -303,11 +301,21 @@ function activateSearchBox(e) {
 	searchBoxPos.value = { x: clientX - 14, y: clientY - 18 }
 }
 
-function dismissSearchBox(e) {
+function dismissSearchBox() {
+	searching.value = false
+	searchBoxPos.value = null
+}
+
+function dismissSearchBoxOnEsc(e) {
 	if (e.key === 'Escape') {
-		searching.value = false
-		searchBoxPos.value = null
+		dismissSearchBox()
 	}
+}
+
+function draggingBlock(blockType) {
+	addingBlockType.value = blockType
+	document.body.style.cursor = "context-menu"
+	dismissSearchBox()
 }
 </script>
 
@@ -321,9 +329,9 @@ function dismissSearchBox(e) {
 		<a href="" class="btn" @click.prevent="run">Run Block</a>
 		<a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
 
-		<a v-for="(v, k) in CoreBlocks" :key="k" href="#" class="btn" @mousedown.prevent.stop="addingBlockType = k">
+		<!-- <a v-for="(v, k) in CoreBlocks" :key="k" href="#" class="btn" @mousedown.prevent.stop="addingBlockType = k">
 			Add {{ k.split('/').pop() }}
-		</a>
+		</a> -->
 	</div>
 	<div class="editor-layer">
 		<AddBlock v-if="addingBlock" @cancel="addingBlock = false" @success="addingBlock = false"></AddBlock>
@@ -342,7 +350,7 @@ function dismissSearchBox(e) {
 			</component>
 		</div>
 
-		<SearchBox v-if="searching" :pos="searchBoxPos"></SearchBox>
+		<SearchBox v-if="searching" :pos="searchBoxPos" @dragging-block="draggingBlock"></SearchBox>
 	</div>
 	<div v-if="startPos && currentPos" class="selection-box" :style="selectionBoxStyle"></div>
 </template>
@@ -394,6 +402,10 @@ svg {
 	bottom: 0;
 	left: 0;
 	overflow: hidden;
+}
+
+.dragging-item {
+	cursor: copy;
 }
 
 .block-wrapper input,
