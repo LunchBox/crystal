@@ -245,7 +245,7 @@ function selectBlocksInRange() {
 	inRangeBlocks.forEach(toggleBlock)
 }
 
-function mouseup() {
+function mouseup(e) {
 	selectBlocksInRange()
 
 	draggingBlocks.value = false
@@ -255,7 +255,7 @@ function mouseup() {
 	startPos.value = null
 	currentPos.value = null
 
-	mouseupOnAddingBlock()
+	mouseupOnAddingBlock(e)
 }
 
 const canvasOuter = ref(null)

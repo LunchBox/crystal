@@ -5,6 +5,7 @@ export default class Block extends Base {
   constructor() {
     super()
     this.title = 'Block Name'
+    // this.width = null
 
     this.type = 'block'
 

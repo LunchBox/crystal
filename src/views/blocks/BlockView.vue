@@ -51,8 +51,13 @@ const bStyle = computed(() => {
 	const [x = 0, y = 0] = props.block.position
 	return {
 		left: `${x}px`,
-		top: `${y}px`
+		top: `${y}px`,
+		// width: props.block.width || 'auto'
 	}
+})
+
+const bClass = computed(() => {
+	return [{ selected: isBlockSelected(props.block) }, props.block.status]
 })
 
 function isArgSelected(input) {
@@ -105,16 +110,21 @@ const callback = function (mutationsList) {
 }
 const observer = new MutationObserver(callback)
 
+// function storeWidth() {
+// 	props.block.width = blockRef.value.style.width
+// }
+
 onMounted(() => {
 	updatePositions()
 
 	window.addEventListener('resize', updatePositions)
-
+	// window.addEventListener('mouseup', storeWidth)
 	observer.observe(blockRef.value, config)
 })
 
 onBeforeUnmount(() => {
 	window.removeEventListener('resize', updatePositions)
+	// window.removeEventListener('mouseup', storeWidth)
 	observer.disconnect()
 })
 
@@ -126,11 +136,11 @@ function mousedownOnBlock(e) {
 	}
 }
 
+
 </script>
 
 <template>
-	<div class="block" ref="blockRef" :style="bStyle" :class="[{ selected: isBlockSelected(block) }, block.status]"
-		@mousedown.left.stop="mousedownOnBlock">
+	<div class="block" ref="blockRef" :style="bStyle" :class="bClass" @mousedown.left.stop="mousedownOnBlock">
 		<div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)" @contextmenu.prevent
 			@mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)">
 
@@ -194,9 +204,15 @@ function mousedownOnBlock(e) {
 .block {
 	position: absolute;
 	padding: 0.25rem;
+
 	border: 2px solid rgba(0, 0, 0, 0.2);
 	border-radius: 3px;
+
 	max-width: 300px;
+
+	/* min-width: min-content; */
+	/* resize: horizontal; */
+	/* overflow: auto; */
 }
 
 .block.busy {
@@ -219,6 +235,8 @@ function mousedownOnBlock(e) {
 .block-content {
 	display: flex;
 	gap: 0 0.5rem;
+
+
 }
 
 .block.selected {
