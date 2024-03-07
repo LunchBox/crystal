@@ -3,7 +3,7 @@ import { io } from 'socket.io-client'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { assignMsgId, assignStatus, appendStdout, appendStderr, assignDisplayData } = store
+const { assignMsgId, assignStatus, appendOutput, assignDisplayData } = store
 
 const URL = 'http://127.0.0.1:5000'
 
@@ -26,12 +26,8 @@ socket.on('output', (msg) => {
   } else if (msgObj.msg_type === 'display_data') {
     assignDisplayData(msgObj?.parent_header?.msg_id, msgObj?.content?.data)
   } else if (msgObj.msg_type === 'stream') {
-    if (msgObj?.content?.name === 'stdout') {
-      appendStdout(msgObj?.parent_header?.msg_id, msgObj?.content?.text)
-    }
-    if (msgObj?.content?.name === 'stderr') {
-      appendStderr(msgObj?.parent_header?.msg_id, msgObj?.content?.text)
-    }
+    const { name, text } = msgObj.content
+    appendOutput(msgObj.parent_header.msg_id, name, text)
   }
 })
 
@@ -42,9 +38,7 @@ socket.on('reg_msg', (msg) => {
 
 function run(block) {
   const code = block.toCode()
-  console.log(code)
-  block.stdout = null
-  block.stderr = null
+  block.resetOutputs()
   socket.emit('execute_input', JSON.stringify({ block_id: block.id, code }))
 }
 

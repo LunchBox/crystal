@@ -1,9 +1,9 @@
 import Base from './base.js'
 
 export default class InputConfig extends Base {
-  constructor() {
+  constructor({ label = 'arg' } = {}) {
     super()
-    this.label = 'arg'
+    this.label = label
     this.source = null
   }
 }

@@ -27,8 +27,6 @@ export default class Block extends Base {
     // the message id of kernel
     this.msgId = null
     this.status = 'idle'
-    this.stdout = null
-    this.stderr = null
     this.displayData = null
   }
 
@@ -79,6 +77,19 @@ export default class Block extends Base {
 
   delOutputOption(outputIdx, optIdx) {
     this.outputs[outputIdx].options.splice(optIdx, 1)
+  }
+
+  resetOutputs() {
+    const list = ['func_return', 'stdout', 'stderr']
+    this.outputs.filter((out) => list.includes(out.type)).forEach((out) => (out.value = null))
+  }
+
+  appendOutput(outputType, text) {
+    this.outputs
+      .filter((out) => out.type === outputType)
+      .forEach((out) => {
+        out.value === null ? (out.value = text) : (out.value += text)
+      })
   }
 
   fVal(output) {

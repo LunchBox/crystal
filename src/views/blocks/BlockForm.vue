@@ -108,20 +108,6 @@ function onTab(e) {
 				<button @click.prevent="addOutput">Add Output</button>
 			</div>
 
-			<!-- <div class="field">
-        <label>
-          <span>Func</span>
-          <input type="text" v-model="formData.func" />
-        </label>
-      </div> -->
-
-			<!-- <div>
-        <label>
-          <span>Code</span>
-          <textarea v-model="formData.code"></textarea>
-        </label>
-      </div> -->
-
 			<div>
 				<label>
 					<span>Content</span>
