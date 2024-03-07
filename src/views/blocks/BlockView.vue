@@ -164,17 +164,15 @@ function mousedownOnBlock(e) {
 			</div>
 			<div class="block-outputs">
 				<div class="block-output" v-for="output in block.outputs" :key="output.id">
-					<span>{{ output.label }}</span>
+					<span :title="output.value">{{ output.label }}</span>
 
-					<input v-if="output.type === 'string'" type="text" v-model="block.values[output.label]" />
+					<input v-if="output.type === 'string'" type="text" v-model="output.value" />
 
-					<input v-else-if="INPUT_TYPES.includes(output.type)" :type="output.type"
-						v-model="block.values[output.label]" />
+					<input v-else-if="INPUT_TYPES.includes(output.type)" :type="output.type" v-model="output.value" />
 
-					<textarea v-else-if="output.type === 'text'" type="text" v-model="block.values[output.label]">
-			</textarea>
+					<textarea v-else-if="output.type === 'text'" type="text" v-model="output.value"></textarea>
 
-					<select v-else-if="output.type === 'select'" v-model="block.values[output.label]">
+					<select v-else-if="output.type === 'select'" v-model="output.value">
 						<option></option>
 						<option v-for="opt in output.options" :key="opt" :value="opt">{{ opt }}</option>
 					</select>

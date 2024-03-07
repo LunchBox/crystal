@@ -35,5 +35,6 @@ export default class OutputConfig extends Base {
     this.type = null
     this.defaultValue = null
     this.options = []
+    this.value = null
   }
 }

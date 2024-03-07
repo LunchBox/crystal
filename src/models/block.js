@@ -14,8 +14,6 @@ export default class Block extends Base {
 
     this.position = [100, 100]
 
-    this.values = {}
-
     this.func = null
     this.namedArgs = false
 
@@ -75,8 +73,8 @@ export default class Block extends Base {
 
   // TODO: should not be that simple
   setOutputValue(label, val) {
-    console.log(label)
-    // this.values[label] = val
+    const output = this.outputs.find((out) => out.label === label)
+    output.value = val
   }
 
   delOutputOption(outputIdx, optIdx) {
@@ -84,7 +82,7 @@ export default class Block extends Base {
   }
 
   fVal(output) {
-    const val = this.values[output.label]
+    const val = output.value
     if (output.type === 'number') {
       return `${val ? val : 0}`
     } else {
