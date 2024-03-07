@@ -13,7 +13,7 @@ const { connectIO, isBlockSelected, relativePos } = store
 
 const props = defineProps(['block'])
 
-defineEmits(['edit', 'mousedown-on-block'])
+const emit = defineEmits(['edit', 'mousedown-on-block'])
 
 // TODO: it changed the props data...
 function clearArg(input) {
@@ -118,11 +118,19 @@ onBeforeUnmount(() => {
 	observer.disconnect()
 })
 
+function mousedownOnBlock(e) {
+	// 只在被選中後第二次點擊才觸發鼠標事件
+	if (isBlockSelected(props.block)) {
+		e.preventDefault()
+		emit('mousedown-on-block', e, props.block)
+	}
+}
+
 </script>
 
 <template>
 	<div class="block" ref="blockRef" :style="bStyle" :class="[{ selected: isBlockSelected(block) }, block.status]"
-		@mousedown.left.stop>
+		@mousedown.left.stop="mousedownOnBlock">
 		<div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)" @contextmenu.prevent
 			@mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)">
 
