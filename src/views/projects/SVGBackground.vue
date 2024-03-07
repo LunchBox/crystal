@@ -1,11 +1,13 @@
 <script setup>
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { elPositions, canvasOffset, canvasScale, ioPairs } = storeToRefs(store)
+const { project, elPositions, ioPairs } = storeToRefs(store)
 
-console.log(canvasScale.value)
+const offset = computed(() => project.value.offset)
+const scale = computed(() => project.value.scale)
 
 function curve(pair) {
 	const [output, input] = pair
@@ -26,8 +28,8 @@ function curve(pair) {
 
 <template>
 	<svg xmlns="http://www.w3.org/2000/svg">
-		<g :transform="`translate(${canvasOffset[0]}, ${canvasOffset[1]}) scale(${canvasScale}) `">
-			<rect width="100%" height="100%" fill="transparent" stroke="#ccc" transform="translate(0, 0)"></rect>
+		<g :transform="`translate(${offset[0]}, ${offset[1]}) scale(${scale}) `">
+			<!-- <rect width="100%" height="100%" fill="transparent" stroke="#ccc" transform="translate(0, 0)"></rect> -->
 			<g transform="translate(4, 4)" stroke-width="2" stroke="rgba(0,0,0,0.2)" fill="transparent">
 				<path v-for="pair in ioPairs" :key="pair" :d="curve(pair)" />
 			</g>

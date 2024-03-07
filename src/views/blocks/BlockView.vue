@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { canvasOffset, canvasScale, selectedInput, selectedOutput, elPositions } = storeToRefs(store)
+const { selectedInput, selectedOutput, elPositions } = storeToRefs(store)
 const { connectIO, isBlockSelected, relativePos } = store
 
 const props = defineProps(['block'])
@@ -73,9 +73,7 @@ function isOccupied(input) {
 
 function run() {
 	console.log(props.block.toCode())
-	// if (props.block.status === 'idle') {
 	runOnKernel(props.block)
-	// }
 }
 
 // ------------- io positions
@@ -124,7 +122,7 @@ onBeforeUnmount(() => {
 
 <template>
 	<div class="block" ref="blockRef" :style="bStyle" :class="[{ selected: isBlockSelected(block) }, block.status]"
-		@mousedown.prevent.stop>
+		@mousedown.left.stop>
 		<div class="block-title" :ref="(el) => (elRefs[`${block.id}`] = el)" @contextmenu.prevent
 			@mousedown.prevent.stop="$emit('mousedown-on-block', $event, block)">
 

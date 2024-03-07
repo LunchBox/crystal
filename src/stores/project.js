@@ -17,12 +17,9 @@ export const useProjectStore = defineStore('project', () => {
 
   // ---- pan / scale canvas
 
-  const canvasOffset = ref([0, 0])
-  const canvasScale = ref(1)
-
   function relativePos({ x, y } = {}) {
-    const [ox, oy] = canvasOffset.value
-    const scale = canvasScale.value
+    const [ox, oy] = project.value.offset
+    const scale = project.value.scale
 
     return { x: (x - ox) / scale, y: (y - oy) / scale }
   }
@@ -232,8 +229,6 @@ export const useProjectStore = defineStore('project', () => {
     appendStderr,
     assignDisplayData,
 
-    canvasOffset,
-    canvasScale,
     relativePos
   }
 })

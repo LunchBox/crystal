@@ -8,6 +8,9 @@ export default class Project extends Base {
     super()
     this.title = 'Project Name'
 
+    this.offset = [0, 0]
+    this.scale = 1
+
     this.blocks = []
     this.blockGroups = []
   }

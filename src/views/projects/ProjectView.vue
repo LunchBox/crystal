@@ -16,8 +16,6 @@ import ViewComponents from '@/lib/core_blocks/v1/views'
 
 const store = useProjectStore()
 const {
-	canvasOffset,
-	canvasScale,
 	project,
 	elPositions,
 	selectedBlocks
@@ -51,8 +49,8 @@ function deleteBlocks() {
 }
 
 function resetCanvas() {
-	canvasScale.value = 1
-	canvasOffset.value = [0, 0]
+	project.value.offset = [0, 0]
+	project.value.scale = 1
 }
 
 // ---- block views
@@ -94,16 +92,16 @@ function onWheel(e) {
 	}
 
 	const delta = e.deltaY * unit
-	const os = canvasScale.value
-	canvasScale.value += delta
+	const originalScale = project.value.scale
+	project.value.scale += delta
 
-	const r = canvasScale.value / os
+	const r = project.value.scale / originalScale
 
 	const { clientX, clientY } = e
-	const [ox, oy] = canvasOffset.value
+	const [ox, oy] = project.value.offset
 
-	canvasOffset.value[0] -= (clientX - ox) * (r - 1)
-	canvasOffset.value[1] -= (clientY - oy) * (r - 1)
+	project.value.offset[0] -= (clientX - ox) * (r - 1)
+	project.value.offset[1] -= (clientY - oy) * (r - 1)
 }
 
 // ---- dragging related
@@ -117,11 +115,12 @@ const startPos = ref(null)
 const currentPos = ref(null)
 
 const canvasStyle = computed(() => {
-	const [x, y] = canvasOffset.value
+	const [x, y] = project.value.offset
+	const scale = project.value.scale
 	return {
 		top: y + 'px',
 		left: x + 'px',
-		transform: `scale(${canvasScale.value}, ${canvasScale.value})`
+		transform: `scale(${scale}, ${scale})`
 	}
 })
 
@@ -182,7 +181,7 @@ function cloneSelections() {
 }
 
 function moveSelections(e) {
-	const scale = canvasScale.value
+	const scale = project.value.scale
 	const blocks = [...selectedBlocks.value]
 	blocks.forEach((block) => {
 		const pos = block.position
@@ -194,8 +193,8 @@ function moveSelections(e) {
 }
 
 function moveCanvas(e) {
-	canvasOffset.value[0] += e.movementX
-	canvasOffset.value[1] += e.movementY
+	project.value.offset[0] += e.movementX
+	project.value.offset[1] += e.movementY
 }
 
 function mousemove(e) {
@@ -227,8 +226,8 @@ function selectBlocksInRange() {
 	const [x1, y1] = startPos.value
 	const [x2, y2] = currentPos.value
 
-	const [ox, oy] = canvasOffset.value
-	const scale = canvasScale.value
+	const [ox, oy] = project.value.offset
+	const scale = project.value.scale
 
 	const mx = (Math.min(x1, x2) - ox) / scale
 	const my = (Math.min(y1, y2) - oy) / scale
@@ -292,7 +291,7 @@ function run() {
 			Add {{ k.split('/').pop() }}
 		</a>
 	</div>
-	<div style="position: absolute; z-index: 2">
+	<div class="editor-layer">
 		<AddBlock v-if="addingBlock" @cancel="addingBlock = false" @success="addingBlock = false"></AddBlock>
 
 		<EditBlock v-if="editingBlock" :block="editingBlock" :pos="editingPos" @cancel="resetAfterEdit"
@@ -311,6 +310,15 @@ function run() {
 </template>
 
 <style scoped>
+.editor-layer {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	overflow: hidden;
+}
+
 svg {
 	z-index: -1;
 	position: fixed;
