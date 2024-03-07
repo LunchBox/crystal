@@ -396,7 +396,7 @@ svg {
 .selection-box {
 	position: absolute;
 	pointer-events: none;
-	border: 1px solid green;
+	border: 1px solid gray;
 }
 
 .block-wrapper {
