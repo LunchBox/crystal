@@ -294,6 +294,8 @@ const searching = ref(false)
 const searchBoxPos = ref(null)
 
 function activateSearchBox(e) {
+	if (searching.value) return
+
 	searching.value = true
 
 	const { clientX, clientY } = e
