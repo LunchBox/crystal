@@ -9,7 +9,7 @@ import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
 const { canvasOffset, canvasScale, selectedInput, selectedOutput, elPositions } = storeToRefs(store)
-const { connectIO, isBlockSelected } = store
+const { connectIO, isBlockSelected, relativePos } = store
 
 const props = defineProps(['block'])
 
@@ -83,15 +83,13 @@ const blockRef = ref(null)
 const elRefs = ref({})
 
 function updatePositions() {
-	const [ox, oy] = canvasOffset.value
-	const scale = canvasScale.value
 	Object.entries(elRefs.value).forEach(([id, el]) => {
 		if (!el) {
 			delete elPositions.value[id]
 			return
 		}
 		const { x, y, width, height } = el.getBoundingClientRect()
-		elPositions.value[id] = { x: (x - ox) / scale, y: (y - oy) / scale, width, height }
+		elPositions.value[id] = { ...relativePos({ x, y }), width, height }
 	})
 }
 

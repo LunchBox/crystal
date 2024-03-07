@@ -20,6 +20,13 @@ export const useProjectStore = defineStore('project', () => {
   const canvasOffset = ref([0, 0])
   const canvasScale = ref(1)
 
+  function relativePos({ x, y } = {}) {
+    const [ox, oy] = canvasOffset.value
+    const scale = canvasScale.value
+
+    return { x: (x - ox) / scale, y: (y - oy) / scale }
+  }
+
   // ---- block ui related
 
   const selectedBlocks = ref(new Set())
@@ -226,6 +233,7 @@ export const useProjectStore = defineStore('project', () => {
     assignDisplayData,
 
     canvasOffset,
-    canvasScale
+    canvasScale,
+    relativePos
   }
 })

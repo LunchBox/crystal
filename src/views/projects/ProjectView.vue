@@ -22,7 +22,7 @@ const {
 	elPositions,
 	selectedBlocks
 } = storeToRefs(store)
-const { addBlock, delBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks } = store
+const { addBlock, delBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks, relativePos } = store
 
 const blocks = computed(() => project.value.blocks)
 
@@ -68,17 +68,21 @@ function getBlockView(type) {
 function mouseupOnAddingBlock(e) {
 	if (addingBlockType.value !== null) {
 		const b = new CoreBlocks[addingBlockType.value]()
+
+		//TODO: should be pageX?
 		const { clientX: x, clientY: y } = e
-		b.position = [x, y]
+		const { x: rx, y: ry } = relativePos({ x, y })
+		b.position = [rx, ry]
+
 		addBlock(b)
 
 		addingBlockType.value = null
 	}
 }
 
-function addBlockByType(type) {
-	addBlock(new CoreBlocks[type]())
-}
+// function addBlockByType(type) {
+// 	addBlock(new CoreBlocks[type]())
+// }
 
 // ---- scale
 
