@@ -170,7 +170,21 @@ function mousedownOnBlock(e, block) {
 }
 
 function cloneSelections() {
-	const clones = [...selectedBlocks.value].map((b) => b.clone())
+	const sbs = [...selectedBlocks.value]
+	const clones = sbs.map((b) => b.clone())
+
+	// redirect input source to new cloned block
+	const idMapping = Object.fromEntries(sbs.map((b, idx) => [b.id, clones[idx].id]))
+	clones.forEach(c => {
+		c.inputs.forEach(inp => {
+			if (!inp.source) return
+			const [sid, ...rest] = inp.source.split("_")
+			if (idMapping[sid]) {
+				inp.source = [idMapping[sid], ...rest].join("_")
+			}
+		})
+	})
+
 	clearSelectedBlocks()
 	clones.forEach((b) => {
 		addBlock(b)
