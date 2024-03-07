@@ -45,6 +45,20 @@ function delOutputOption(outputIdx, optIdx) {
 function onSubmit() {
 	emit('submit', formData.value)
 }
+
+function insertTabCharacter(target) {
+	const { value, selectionStart: start, selectionEnd: end } = target
+
+	// Insert tab character
+	target.value = `${value.substring(0, start)}\t${value.substring(end)}`
+
+	// Move cursor to new position
+	target.selectionStart = target.selectionEnd = start + 1
+}
+
+function onTab(e) {
+	insertTabCharacter(e.target)
+}
 </script>
 
 <template>
@@ -111,7 +125,7 @@ function onSubmit() {
 			<div>
 				<label>
 					<span>Content</span>
-					<textarea v-model="formData.content"></textarea>
+					<textarea v-model="formData.content" @keydown.tab.prevent.stop="onTab"></textarea>
 				</label>
 			</div>
 

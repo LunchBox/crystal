@@ -1,5 +1,9 @@
 @import './base.css';
 
+* {
+  tab-size: 1rem;
+}
+
 #app {
   margin: 0 auto;
   padding: 1rem;
