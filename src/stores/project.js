@@ -190,8 +190,8 @@ export const useProjectStore = defineStore('project', () => {
     if (block) block.status = status
   }
 
-  function appendOutput(msgId, outputType, text) {
-    blockByMsg.value[msgId]?.appendOutput(outputType, text)
+  function appendStd(msgId, stdType, text) {
+    blockByMsg.value[msgId]?.appendStd(stdType, text)
   }
 
   function assignDisplayData(msgId, dataObj) {
@@ -219,7 +219,7 @@ export const useProjectStore = defineStore('project', () => {
     ioPairs,
     assignMsgId,
     assignStatus,
-    appendOutput,
+    appendStd,
     assignDisplayData,
 
     relativePos

@@ -24,15 +24,7 @@ export const INPUT_TYPES = [
 ]
 
 // basiclly the HTML input type
-export const OUTPUT_TYPES = [
-  'func_return',
-  'stdout',
-  'stderr',
-  'string',
-  'text',
-  ...INPUT_TYPES,
-  'select'
-]
+export const OUTPUT_TYPES = ['res', 'string', 'text', ...INPUT_TYPES, 'select']
 
 import Base from './base.js'
 

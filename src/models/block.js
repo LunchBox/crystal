@@ -27,6 +27,8 @@ export default class Block extends Base {
     // the message id of kernel
     this.msgId = null
     this.status = 'idle'
+    this.stdout = null
+    this.stderr = null
     this.displayData = null
   }
 
@@ -80,16 +82,12 @@ export default class Block extends Base {
   }
 
   resetOutputs() {
-    const list = ['func_return', 'stdout', 'stderr']
+    const list = ['res', 'stdout', 'stderr']
     this.outputs.filter((out) => list.includes(out.type)).forEach((out) => (out.value = null))
   }
 
-  appendOutput(outputType, text) {
-    this.outputs
-      .filter((out) => out.type === outputType)
-      .forEach((out) => {
-        out.value === null ? (out.value = text) : (out.value += text)
-      })
+  appendStd(stdType, text) {
+    this[stdType] === null ? (this[stdType].value = text) : (this[stdType] += text)
   }
 
   fVal(output) {
@@ -126,7 +124,7 @@ export default class Block extends Base {
 
     const outputs = this.outputs.map((output) => {
       let exp = 'None'
-      if (output.type === 'func_return') {
+      if (output.type === 'res') {
         exp = funcStr
       } else {
         exp = this.fVal(output)

@@ -32,7 +32,7 @@ export default class extends Block {
     // 有輸出，要把結果掛到輸出上
     const outputs = this.outputs.map((output) => {
       let exp = 'None'
-      if (output.type === 'func_return') {
+      if (output.type === 'res') {
         exp = funcStr
       } else {
         exp = this.fVal(output)

@@ -3,7 +3,7 @@ import { io } from 'socket.io-client'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { assignMsgId, assignStatus, appendOutput, assignDisplayData } = store
+const { assignMsgId, assignStatus, appendStd, assignDisplayData } = store
 
 const URL = 'http://127.0.0.1:5000'
 
@@ -27,7 +27,7 @@ socket.on('output', (msg) => {
     assignDisplayData(msgObj?.parent_header?.msg_id, msgObj?.content?.data)
   } else if (msgObj.msg_type === 'stream') {
     const { name, text } = msgObj.content
-    appendOutput(msgObj.parent_header.msg_id, name, text)
+    appendStd(msgObj.parent_header.msg_id, name, text)
   }
 })
 
