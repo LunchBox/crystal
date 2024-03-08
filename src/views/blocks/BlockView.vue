@@ -186,6 +186,8 @@ function mousedownOnBlock(e) {
 		<slot></slot>
 
 		<div class="block-extra">
+			<pre>{{ block.stderr }}</pre>
+			<pre>{{ block.stdout }}</pre>
 			<div v-if="block.displayData">
 				<img v-if="block.hasInlineImage" :src="block.inlineImage" :alt="block.inlineImageCaption" />
 			</div>

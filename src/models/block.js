@@ -87,7 +87,7 @@ export default class Block extends Base {
   }
 
   appendStd(stdType, text) {
-    this[stdType] === null ? (this[stdType].value = text) : (this[stdType] += text)
+    this[stdType] === null ? (this[stdType] = text) : (this[stdType] += text)
   }
 
   fVal(output) {
