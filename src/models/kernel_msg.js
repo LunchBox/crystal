@@ -3,6 +3,17 @@ const mixin = {
     this[stdType] === null ? (this[stdType] = text) : (this[stdType] += text)
   },
 
+  addKernelEventListener(msgType, func) {
+    if (!Array.isArray(this.kernelEventListeners[msgType])) {
+      this.kernelEventListeners[msgType] = []
+    }
+    this.kernelEventListeners[msgType].push(func)
+  },
+
+  dispatchKernelEvent(msgType, msgObj) {
+    this.kernelEventListeners[msgType]?.forEach((func) => func(msgObj))
+  },
+
   dealWithKernelMessage(msgObj) {
     const { msg_type: msgType, content } = msgObj
     if (!content) return
@@ -17,10 +28,12 @@ const mixin = {
     } else if (msgType === 'error') {
       const { ename, evalue, traceback } = msgObj.content
       const text = [`${ename}: ${evalue}`].join('\r\n')
-      this.appendStd(msgObj.parent_header.msg_id, 'stderr', text)
+      this.appendStd('stderr', text)
     } else if (msgType === ' execute_result') {
       //TODO
     }
+
+    this.dispatchKernelEvent(msgType, content)
   }
 }
 

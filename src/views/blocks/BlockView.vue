@@ -77,8 +77,11 @@ function isOccupied(input) {
 }
 
 function run() {
-	console.log(props.block.toCode())
-	runOnKernel(props.block)
+	const block = props.block
+	const code = block.toCode()
+	block.resetOutputs()
+
+	runOnKernel(code, block)
 }
 
 // ------------- io positions

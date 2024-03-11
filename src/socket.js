@@ -40,12 +40,9 @@ socket.on('reg_msg', (msg) => {
   observers[exchangeId].forEach((ob) => (ob.msgId = msgId))
 })
 
-function run(block) {
-  const code = block.toCode()
-  block.resetOutputs()
-
+function run(code, subscriber) {
   const exchangeId = uuidv4()
-  subscribe(exchangeId, block)
+  subscribe(exchangeId, subscriber)
 
   const data = JSON.stringify({ exchangeId, code })
   socket.emit('execute_input', data)

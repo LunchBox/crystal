@@ -1,6 +1,5 @@
 <script setup>
 import { ref, watch } from 'vue'
-import BlockInput from '@/models/block_input.js'
 import BlockOutput from '@/models/block_output.js'
 import { OUTPUT_TYPES } from '@/models/block_output.js'
 
@@ -19,7 +18,7 @@ watch(
 )
 
 function addInput() {
-	formData.value.inputs.push(new BlockInput())
+	formData.value.addInput()
 }
 
 function delInput(idx) {
@@ -27,7 +26,7 @@ function delInput(idx) {
 }
 
 function addOutput() {
-	formData.value.outputs.push(new BlockOutput())
+	formData.value.addOutput()
 }
 
 function delOutput(idx) {

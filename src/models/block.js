@@ -1,9 +1,12 @@
 import Base from './base.js'
+import BlockInput from './block_input.js'
 import BlockOutput from './block_output.js'
 
 import mixin from './kernel_msg.js'
 
 export default class Block extends Base {
+  kernelEventListeners = {}
+
   constructor() {
     super()
     this.title = 'Block Name'
@@ -61,6 +64,10 @@ export default class Block extends Base {
     })
   }
 
+  addInput(label = 'arg') {
+    this.inputs.push(new BlockInput({ label }))
+  }
+
   setInput(inputId, block, output) {
     const input = this.inputs.find((inp) => inp.id === inputId)
     input.source = [block.id, output.id].join('_')
@@ -68,6 +75,10 @@ export default class Block extends Base {
 
   delInput(idx) {
     this.inputs.splice(idx, 1)
+  }
+
+  addOutput(label = 'res') {
+    this.outputs.push(new BlockOutput({ label }))
   }
 
   delOutput(idx) {

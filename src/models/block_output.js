@@ -28,22 +28,14 @@ export const OUTPUT_TYPES = ['res', 'string', 'text', ...INPUT_TYPES, 'select']
 
 import Base from './base.js'
 
-export default class OutputConfig extends Base {
-  constructor() {
+export default class BlockOutput extends Base {
+  constructor({ label = 'res', type = 'res' } = {}) {
     super()
-    this.labelName = null
-    this.type = null
+    console.log(label, type)
+    this.label = label
+    this.type = type
     this.defaultValue = null
     this.options = []
     this.value = null
-  }
-
-  get label() {
-    if (this.labelName === null) return this.type
-    return this.labelName
-  }
-
-  set label(val) {
-    this.labelName = val
   }
 }
