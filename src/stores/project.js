@@ -11,17 +11,18 @@ export const useProjectStore = defineStore('project', () => {
   const project = ref(null)
   const blocks = computed(() => project.value.blocks)
   const blockMap = computed(() => Object.fromEntries(blocks.value.map((b) => [b.id, b])))
-  const blockByMsg = computed(() =>
-    Object.fromEntries(blocks.value.filter((b) => b.msgId).map((b) => [b.msgId, b]))
-  )
+
+  // const blockByMsg = computed(() =>
+  //   Object.fromEntries(blocks.value.filter((b) => b.msgId).map((b) => [b.msgId, b]))
+  // )
 
   // ---- pan / scale canvas
 
-  function relativePos({ x, y } = {}) {
+  function relativePos([x, y] = []) {
     const [ox, oy] = project.value.offset
     const scale = project.value.scale
 
-    return { x: (x - ox) / scale, y: (y - oy) / scale }
+    return [(x - ox) / scale, (y - oy) / scale]
   }
 
   // ---- block ui related
@@ -178,26 +179,6 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
-  // ---- communication with kernel related
-
-  function assignStatus(msgId, status) {
-    const block = blockByMsg.value[msgId]
-    if (block) block.status = status
-  }
-
-  function appendStd(msgId, stdType, text) {
-    blockByMsg.value[msgId]?.appendStd(stdType, text)
-  }
-
-  function assignDisplayData(msgId, dataObj) {
-    const block = blockByMsg.value[msgId]
-    if (block) block.displayData = dataObj
-  }
-
-  function notifyBlock(msgId, msgType, content) {
-    blockByMsg.value[msgId]?.dealWith(msgType, content)
-  }
-
   return {
     project,
     selectedBlocks,
@@ -216,10 +197,6 @@ export const useProjectStore = defineStore('project', () => {
     connectIO,
     elPositions,
     ioPairs,
-    assignStatus,
-    appendStd,
-    assignDisplayData,
-    notifyBlock,
 
     relativePos
   }

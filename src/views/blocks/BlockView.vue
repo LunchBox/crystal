@@ -91,8 +91,9 @@ function updatePositions() {
 			delete elPositions.value[id]
 			return
 		}
-		const { x, y, width, height } = el.getBoundingClientRect()
-		elPositions.value[id] = { ...relativePos({ x, y }), width, height }
+		const { x: cx, y: cy, width, height } = el.getBoundingClientRect()
+		const [x, y] = relativePos([cx, cy])
+		elPositions.value[id] = { x, y, width, height }
 	})
 }
 

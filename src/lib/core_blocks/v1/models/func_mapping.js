@@ -8,8 +8,6 @@ export default class extends Block {
     this.runnable = true
   }
 
-  dealWith(msgType, content) {}
-
   funcStr() {
     if (!this.content) return 'None'
 

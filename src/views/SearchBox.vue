@@ -1,9 +1,16 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import CoreBlocks from '@/lib/core_blocks/v1/models'
 
+import FuncMapping from '@/lib/core_blocks/v1/models/func_mapping.js';
+
+import { useProjectStore } from '@/stores/project.js'
+
+const store = useProjectStore()
+const { addBlock, relativePos } = store
+
 const props = defineProps(['pos'])
-const emit = defineEmits(['dragging-block'])
+const emit = defineEmits(['dragging-block', 'close'])
 
 const style = computed(() => {
 	const { x = 0, y = 0 } = props.pos || {}
@@ -16,11 +23,34 @@ const style = computed(() => {
 function draggingBlock(blockType) {
 	emit('dragging-block', blockType)
 }
+
+const func = ref(null)
+
+function onApply() {
+	console.log(func.value)
+
+	if (!func.value || func.value.trim() === "") return
+
+	const { x = 0, y = 0 } = props.pos || {}
+	const b = new FuncMapping()
+	b.position = relativePos([x, y])
+
+	const funcCode = func.value.trim()
+	b.content = funcCode
+	b.title = funcCode
+
+	addBlock(b)
+	emit('close')
+}
+
+
 </script>
 
 <template>
 	<div class="search-box" :style="style">
-		<input type="text" autofocus placeholder="type to search">
+		<div>
+			<input type="text" v-model="func" @keydown.enter.prevent="onApply" autofocus placeholder="type to search">
+		</div>
 
 		<div style="margin: .5rem 0;">
 			<ul>

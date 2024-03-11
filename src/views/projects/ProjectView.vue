@@ -70,9 +70,8 @@ function mouseupOnAddingBlock(e) {
 		const b = new CoreBlocks[addingBlockType.value]()
 
 		//TODO: should be pageX?
-		const { clientX: x, clientY: y } = e
-		const { x: rx, y: ry } = relativePos({ x, y })
-		b.position = [rx, ry]
+		const { clientX: cx, clientY: cy } = e
+		b.position = relativePos([cx, cy])
 
 		addBlock(b)
 
@@ -364,8 +363,10 @@ function draggingBlock(blockType) {
 			</component>
 		</div>
 
-		<SearchBox v-if="searching" :pos="searchBoxPos" @dragging-block="draggingBlock"></SearchBox>
+		<SearchBox v-if="searching" :pos="searchBoxPos" @dragging-block="draggingBlock" @close="searching = false">
+		</SearchBox>
 	</div>
+
 	<div v-if="startPos && currentPos" class="selection-box" :style="selectionBoxStyle"></div>
 </template>
 
