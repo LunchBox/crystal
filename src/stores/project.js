@@ -180,11 +180,6 @@ export const useProjectStore = defineStore('project', () => {
 
   // ---- communication with kernel related
 
-  function assignMsgId(blockId, msgId) {
-    const block = blockMap.value[blockId]
-    if (block) block.msgId = msgId
-  }
-
   function assignStatus(msgId, status) {
     const block = blockByMsg.value[msgId]
     if (block) block.status = status
@@ -197,6 +192,10 @@ export const useProjectStore = defineStore('project', () => {
   function assignDisplayData(msgId, dataObj) {
     const block = blockByMsg.value[msgId]
     if (block) block.displayData = dataObj
+  }
+
+  function notifyBlock(msgId, msgType, content) {
+    blockByMsg.value[msgId]?.dealWith(msgType, content)
   }
 
   return {
@@ -217,10 +216,10 @@ export const useProjectStore = defineStore('project', () => {
     connectIO,
     elPositions,
     ioPairs,
-    assignMsgId,
     assignStatus,
     appendStd,
     assignDisplayData,
+    notifyBlock,
 
     relativePos
   }

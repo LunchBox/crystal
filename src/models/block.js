@@ -1,6 +1,8 @@
 import Base from './base.js'
 import BlockOutput from './block_output.js'
 
+import mixin from './kernel_msg.js'
+
 export default class Block extends Base {
   constructor() {
     super()
@@ -26,6 +28,7 @@ export default class Block extends Base {
 
     // the message id of kernel
     this.msgId = null
+
     this.status = 'idle'
     this.stdout = null
     this.stderr = null
@@ -82,12 +85,10 @@ export default class Block extends Base {
   }
 
   resetOutputs() {
-    const list = ['res', 'stdout', 'stderr']
+    const list = ['res']
     this.outputs.filter((out) => list.includes(out.type)).forEach((out) => (out.value = null))
-  }
-
-  appendStd(stdType, text) {
-    this[stdType] === null ? (this[stdType] = text) : (this[stdType] += text)
+    this.stderr = null
+    this.stdout = null
   }
 
   fVal(output) {
@@ -134,3 +135,5 @@ export default class Block extends Base {
     return outputs.join('\r\n')
   }
 }
+
+Object.assign(Block.prototype, mixin)

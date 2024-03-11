@@ -186,10 +186,12 @@ function mousedownOnBlock(e) {
 		<slot></slot>
 
 		<div class="block-extra">
-			<pre>{{ block.stderr }}</pre>
-			<pre>{{ block.stdout }}</pre>
-			<div v-if="block.displayData">
-				<img v-if="block.hasInlineImage" :src="block.inlineImage" :alt="block.inlineImageCaption" />
+			<div>
+				<pre>{{ block.stderr }}</pre>
+				<pre>{{ block.stdout }}</pre>
+				<div v-if="block.displayData">
+					<img v-if="block.hasInlineImage" :src="block.inlineImage" :alt="block.inlineImageCaption" />
+				</div>
 			</div>
 		</div>
 	</div>
@@ -297,5 +299,20 @@ textarea {
 .block-extra>* {
 	position: absolute;
 	top: 1rem;
+}
+
+pre {
+	width: 600px;
+	max-width: 600px;
+	white-space: pre-wrap;
+	/* Since CSS 2.1 */
+	white-space: -moz-pre-wrap;
+	/* Mozilla, since 1999 */
+	white-space: -pre-wrap;
+	/* Opera 4-6 */
+	white-space: -o-pre-wrap;
+	/* Opera 7 */
+	word-wrap: break-word;
+	/* Internet Explorer 5.5+ */
 }
 </style>
