@@ -353,7 +353,7 @@ function draggingBlock(blockType) {
 			@success="resetAfterEdit"></EditBlock>
 	</div>
 
-	<div class="canvas-outer" ref="canvasOuter" @dblclick="activateSearchBox" @contextmenu.prevent @wheel="onWheel"
+	<div class="canvas-outer" ref="canvasOuter" @dblclick="activateSearchBox" @wheel="onWheel" @contextmenu.prevent
 		@mousedown="mousedownOnCanvas">
 		<SVGBackground></SVGBackground>
 
