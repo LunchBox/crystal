@@ -88,11 +88,10 @@ function run() {
 const blockRef = ref(null)
 const elRefs = ref({})
 
-// let updating = false
+let updating = false
 function updatePositions() {
-	// if (updating) return
-	console.log('updating')
-	// updating = true
+	if (updating) return
+	updating = true
 	Object.entries(elRefs.value).forEach(([id, el]) => {
 		if (!el) {
 			delete elPositions.value[id]
@@ -102,26 +101,28 @@ function updatePositions() {
 		const [x, y] = relativePos([cx, cy])
 		elPositions.value[id] = { x, y, width, height }
 	})
-	// updating = false
+	updating = false
 }
 
-watch(() => props.block.position, () => {
-	nextTick(updatePositions)
-}, { deep: true })
+// watch block.position 可以在移動時更新，但修改 block 內容時就不一定能更新了
+// watch(() => props.block.position, () => {
+// 	nextTick(updatePositions)
+// }, { deep: true })
 
-// const config = { attributes: true, childList: true, subtree: true }
-// const callback = function (mutationsList) {
-// 	for (const mutation of mutationsList) {
-// 		if (mutation.type === 'childList') {
-// 			console.log('A child node has been added or removed.')
-// 			updatePositions()
-// 		} else if (mutation.type === 'attributes') {
-// 			console.log('A ' + mutation.attributeName + ' attribute was modified.')
-// 			updatePositions()
-// 		}
-// 	}
-// }
-// const observer = new MutationObserver(callback)
+const config = { attributes: true, childList: true, subtree: true }
+const callback = function (mutationsList) {
+	for (const mutation of mutationsList) {
+		console.log(mutation.type)
+		if (mutation.type === 'childList') {
+			// console.log('A child node has been added or removed.')
+			updatePositions()
+		} else if (mutation.type === 'attributes') {
+			// console.log('A ' + mutation.attributeName + ' attribute was modified.')
+			updatePositions()
+		}
+	}
+}
+const observer = new MutationObserver(callback)
 
 // function storeWidth() {
 // 	props.block.width = blockRef.value.style.width
@@ -132,13 +133,13 @@ onMounted(() => {
 
 	window.addEventListener('resize', updatePositions)
 	// window.addEventListener('mouseup', storeWidth)
-	// observer.observe(blockRef.value, config)
+	observer.observe(blockRef.value, config)
 })
 
 onBeforeUnmount(() => {
 	window.removeEventListener('resize', updatePositions)
 	// window.removeEventListener('mouseup', storeWidth)
-	// observer.disconnect()
+	observer.disconnect()
 })
 
 function mousedownOnBlock(e) {
