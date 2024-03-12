@@ -1,9 +1,11 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { defineAsyncComponent } from 'vue'
 
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
+
+import { run as runOnKernel } from '@/socket.js'
 
 import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
@@ -291,8 +293,13 @@ onBeforeUnmount(() => {
 })
 
 function run() {
-	blocks.value.forEach((b) => {
-		console.log(b.toCode())
+	const blocks = [...selectedBlocks.value]
+
+	blocks.forEach((b) => {
+		const code = b.toCode()
+		b.resetOutputs()
+
+		runOnKernel(code, b)
 	})
 }
 
@@ -338,8 +345,7 @@ function draggingBlock(blockType) {
 		<a href="" class="btn" @click.prevent="save">Save</a>
 		<a href="" class="btn" @click.prevent="addingBlock = true">Add Block</a>
 		<a href="#" class="btn" @click.prevent="deleteBlocks">Del Blocks</a>
-		<a href="" class="btn" @click.prevent="run">Run</a>
-		<a href="" class="btn" @click.prevent="run">Run Block</a>
+		<a href="" class="btn" @click.prevent="run">Run Selection</a>
 		<a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
 
 		<!-- <a v-for="(v, k) in CoreBlocks" :key="k" href="#" class="btn" @mousedown.prevent.stop="addingBlockType = k">
