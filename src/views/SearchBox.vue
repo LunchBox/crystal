@@ -7,7 +7,7 @@ import FuncMapping from '@/lib/core_blocks/v1/models/func_mapping.js';
 
 import { useProjectStore } from '@/stores/project.js'
 
-import { run } from '@/socket.js';
+import { runCode } from '@/socket.js';
 
 const store = useProjectStore()
 const { addBlock, relativePos } = store
@@ -73,7 +73,7 @@ function onApply() {
 		error.value = text
 	})
 
-	run(`import info\r\ninfo.get_info(${func.value})`, tmplB)
+	runCode(`import info\r\ninfo.get_info(${func.value})`, tmplB)
 }
 
 function forceAdd() {

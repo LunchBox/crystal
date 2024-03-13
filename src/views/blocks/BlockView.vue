@@ -2,7 +2,7 @@
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { INPUT_TYPES } from '@/models/block_output.js'
 
-import { run as runOnKernel } from '@/socket.js'
+import { runBlock } from '@/socket.js'
 
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
@@ -77,11 +77,7 @@ function isOccupied(input) {
 }
 
 function run() {
-	const block = props.block
-	const code = block.toCode()
-	block.resetOutputs()
-
-	runOnKernel(code, block)
+	runBlock(props.block)
 }
 
 // ------------- io positions

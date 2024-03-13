@@ -5,7 +5,7 @@ import { defineAsyncComponent } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
-import { run as runOnKernel } from '@/socket.js'
+import { runBlock } from '@/socket.js'
 
 import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
@@ -292,15 +292,12 @@ onBeforeUnmount(() => {
 	window.removeEventListener('keydown', dismissSearchBoxOnEsc)
 })
 
-function run() {
+
+async function run() {
 	const blocks = [...selectedBlocks.value]
-
-	blocks.forEach((b) => {
-		const code = b.toCode()
-		b.resetOutputs()
-
-		runOnKernel(code, b)
-	})
+	for (let i = 0; i < blocks.length; i++) {
+		await runBlock(blocks[i])
+	}
 }
 
 

@@ -40,7 +40,7 @@ socket.on('reg_msg', (msg) => {
   observers[exchangeId].forEach((ob) => (ob.msgId = msgId))
 })
 
-function run(code, subscriber) {
+function runCode(code, subscriber) {
   const exchangeId = uuidv4()
   subscribe(exchangeId, subscriber)
 
@@ -48,4 +48,22 @@ function run(code, subscriber) {
   socket.emit('execute_input', data)
 }
 
-export { run }
+async function runBlock(block) {
+  return new Promise((resolve) => {
+    const statusListener = (msg) => {
+      const { msg_type: msgType, content } = JSON.parse(msg)
+      if (msgType === 'status' && content.execution_state === 'idle') {
+        socket.off('output', statusListener)
+        resolve()
+      }
+    }
+
+    socket.on('output', statusListener)
+
+    const code = block.toCode()
+    block.resetOutputs()
+    runCode(code, block)
+  })
+}
+
+export { runCode, runBlock }
