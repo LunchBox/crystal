@@ -7,7 +7,6 @@ import { useProjectStore } from '@/stores/project.js'
 
 import { runBlock } from '@/socket.js'
 
-import AddBlock from '../blocks/AddBlock.vue'
 import EditBlock from '../blocks/EditBlock.vue'
 
 import SVGBackground from './SVGBackground.vue'
@@ -27,7 +26,6 @@ const { addBlock, delBlock, selectBlock, toggleBlock, isBlockSelected, clearSele
 
 const blocks = computed(() => project.value.blocks)
 
-const addingBlock = ref(false)
 const editingBlock = ref(null)
 const editingPos = ref(null)
 
@@ -44,11 +42,12 @@ function resetAfterEdit() {
 }
 
 function deleteBlocks() {
-	if (selectedBlocks.value.size > 0) {
-		const bs = [...selectedBlocks.value]
-		bs.forEach(delBlock)
-		clearSelectedBlocks()
-	}
+	if (selectedBlocks.value.size === 0) return
+	if (!confirm('Are you sure')) return
+
+	const bs = [...selectedBlocks.value]
+	bs.forEach(delBlock)
+	clearSelectedBlocks()
 }
 
 function resetCanvas() {
@@ -272,24 +271,31 @@ function mouseup(e) {
 	mouseupOnAddingBlock(e)
 }
 
-const canvasOuter = ref(null)
+function bindHotkeys(e) {
+	if (e.key === 'Backspace' || e.key === 'Delete') {
+		deleteBlocks()
+	}
+
+	if (e.key === 'Escape') {
+		dismissSearchBox()
+		clearSelectedBlocks()
+	}
+}
 
 onMounted(() => {
 	window.addEventListener('mousedown', mousdown)
 	document.addEventListener('mousemove', mousemove)
-
 	window.addEventListener('mouseup', mouseup)
 
-	window.addEventListener('keydown', dismissSearchBoxOnEsc)
+	window.addEventListener('keydown', bindHotkeys)
 })
 
 onBeforeUnmount(() => {
 	window.removeEventListener('mousedown', mousdown)
 	document.removeEventListener('mousemove', mousemove)
-
 	window.removeEventListener('mouseup', mouseup)
 
-	window.removeEventListener('keydown', dismissSearchBoxOnEsc)
+	window.removeEventListener('keydown', bindHotkeys)
 })
 
 
@@ -323,12 +329,6 @@ function dismissSearchBox() {
 	searchBoxPos.value = null
 }
 
-function dismissSearchBoxOnEsc(e) {
-	if (e.key === 'Escape') {
-		dismissSearchBox()
-	}
-}
-
 function draggingBlock(blockType) {
 	addingBlockType.value = blockType
 	document.body.style.cursor = "context-menu"
@@ -340,23 +340,16 @@ function draggingBlock(blockType) {
 	<h2>{{ project.title }}</h2>
 	<div class="toolbar" @mousedown.stop>
 		<a href="" class="btn" @click.prevent="save">Save</a>
-		<a href="" class="btn" @click.prevent="addingBlock = true">Add Block</a>
 		<a href="#" class="btn" @click.prevent="deleteBlocks">Del Blocks</a>
 		<a href="" class="btn" @click.prevent="run">Run Selection</a>
 		<a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
-
-		<!-- <a v-for="(v, k) in CoreBlocks" :key="k" href="#" class="btn" @mousedown.prevent.stop="addingBlockType = k">
-			Add {{ k.split('/').pop() }}
-		</a> -->
 	</div>
 	<div class="editor-layer">
-		<AddBlock v-if="addingBlock" @cancel="addingBlock = false" @success="addingBlock = false"></AddBlock>
-
 		<EditBlock v-if="editingBlock" :block="editingBlock" :pos="editingPos" @cancel="resetAfterEdit"
 			@success="resetAfterEdit"></EditBlock>
 	</div>
 
-	<div class="canvas-outer" ref="canvasOuter" @dblclick="activateSearchBox" @wheel="onWheel" @contextmenu.prevent
+	<div class="canvas-outer" @dblclick="activateSearchBox" @wheel="onWheel" @contextmenu.prevent
 		@mousedown="mousedownOnCanvas">
 		<SVGBackground></SVGBackground>
 
