@@ -97,7 +97,7 @@ function onTab(e) {
 					<button @click.prevent="delOutput(outputIdx)">X</button>
 
 					<div v-if="output.type === 'select'">
-						<div v-for="(opt, optIdx) in formData.outputs[outputIdx].options" :key="opt">
+						<div v-for="(opt, optIdx) in formData.outputs[outputIdx].options" :key="optIdx">
 							<input type="text" v-model="formData.outputs[outputIdx].options[optIdx]" />
 							<button @click.prevent="delOutputOption(outputIdx, optIdx)">X</button>
 						</div>
