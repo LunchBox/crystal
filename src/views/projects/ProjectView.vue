@@ -205,6 +205,19 @@ function moveSelections(e) {
 	})
 }
 
+function snapSelections() {
+	const snapUnit = 20.0
+	const blocks = [...selectedBlocks.value]
+	blocks.forEach(block => {
+		const pos = block.position
+		if (pos) {
+			pos[0] = Math.round(pos[0] / snapUnit) * snapUnit
+			pos[1] = Math.round(pos[1] / snapUnit) * snapUnit
+		}
+		console.log(pos)
+	})
+}
+
 function moveCanvas(e) {
 	project.value.offset[0] += e.movementX
 	project.value.offset[1] += e.movementY
@@ -261,7 +274,11 @@ function selectBlocksInRange() {
 function mouseup(e) {
 	selectBlocksInRange()
 
+	// snap
+	if (draggingBlocks.value) snapSelections()
 	draggingBlocks.value = false
+
+
 	draggingCanvas.value = false
 
 	selecting.value = false
