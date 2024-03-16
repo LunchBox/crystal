@@ -31,6 +31,13 @@ export default class extends Block {
   }
 
   toCode() {
-    return this.content
+    let text = this.content
+    this.inputs.forEach((inp) => {
+      if (!inp.source) return
+      console.log(inp.source)
+      const exp = new RegExp('\\${' + inp.label + '}', 'g')
+      text = text.replace(exp, inp.source)
+    })
+    return text
   }
 }

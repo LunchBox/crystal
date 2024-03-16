@@ -197,6 +197,7 @@ function mousedownOnBlock(e) {
 
 		<div class="block-extra">
 			<div>
+				<!-- <pre>{{ block.toCode() }}</pre> -->
 				<pre>{{ block.stderr }}</pre>
 				<pre>{{ block.stdout }}</pre>
 				<div v-if="block.displayData">
