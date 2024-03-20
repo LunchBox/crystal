@@ -56,9 +56,10 @@ export const useProjectStore = defineStore('project', () => {
     project.value.blocks.push(block)
   }
 
-  function clearOutputRefs(block) {
+  function clearOutputRefs(block, excepts = []) {
     if (!block._outputs) return
     block._outputs.forEach((ob) => {
+      if (excepts.includes(ob.id)) return
       ob.inputs.forEach((inp) => {
         if (inp.source && inp.source.startsWith(block.id)) {
           inp.source = null
@@ -73,6 +74,31 @@ export const useProjectStore = defineStore('project', () => {
       clearOutputRefs(block)
       blocks.value.splice(idx, 1)
     }
+  }
+
+  function detachBlocks(bs) {
+    const blockIds = bs.map((b) => b.id)
+
+    // clean up ios
+    bs.forEach((block) => {
+      clearOutputRefs(block, blockIds)
+
+      block.inputs.forEach((inp) => {
+        if (!inp.source) return
+
+        const fid = inp.source.split('_')[0]
+        if (!blockIds.includes(fid)) {
+          inp.source = null
+        }
+      })
+
+      const idx = blocks.value.indexOf(block)
+      if (idx > -1) {
+        blocks.value.splice(idx, 1)
+      }
+    })
+
+    return [...bs]
   }
 
   function updateBlock(id, block) {
@@ -190,6 +216,7 @@ export const useProjectStore = defineStore('project', () => {
     addBlock,
     delBlock,
     updateBlock,
+    detachBlocks,
     save,
 
     selectedInput,

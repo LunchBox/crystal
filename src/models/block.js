@@ -36,6 +36,8 @@ export default class Block extends Base {
     this.stdout = null
     this.stderr = null
     this.displayData = null
+
+    this.childBlocks = []
   }
 
   get msgIdx() {

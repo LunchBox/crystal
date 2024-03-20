@@ -16,9 +16,15 @@ export default class Project extends Base {
   }
 
   afterLoad() {
-    this.blocks = this.blocks.map((obj) => {
-      const constructor = CoreBlocks[obj.type] || Block
-      return new constructor().load(obj)
-    })
+    const convert = (attrs) => {
+      const constructor = CoreBlocks[attrs.type] || Block
+      const b = new constructor().load(attrs)
+      if (Array.isArray(b.childBlocks)) {
+        b.childBlocks = b.childBlocks.map(convert)
+      }
+      return b
+    }
+
+    this.blocks = this.blocks.map(convert)
   }
 }

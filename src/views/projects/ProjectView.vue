@@ -22,7 +22,7 @@ const {
 	elPositions,
 	selectedBlocks
 } = storeToRefs(store)
-const { addBlock, delBlock, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks, relativePos } = store
+const { addBlock, delBlock, detachBlocks, selectBlock, toggleBlock, isBlockSelected, clearSelectedBlocks, relativePos } = store
 
 const blocks = computed(() => project.value.blocks)
 
@@ -351,6 +351,51 @@ function draggingBlock(blockType) {
 	document.body.style.cursor = "context-menu"
 	dismissSearchBox()
 }
+
+
+
+// -----
+
+function makeGroup() {
+	if (selectedBlocks.value.size === 0) return
+	if (!confirm("Are you sure?")) return
+
+	const b = new CoreBlocks['core_blocks/block']()
+
+	const bs = detachBlocks([...selectedBlocks.value])
+
+	const xs = bs.map(b => b.position[0])
+	const ys = bs.map(b => b.position[1])
+	const x = xs.reduce((a, b) => a + b, 0) / bs.length
+	const y = ys.reduce((a, b) => a + b, 0) / bs.length
+	// const minX = Math.min(...xs)
+	// const minY = Math.min(...ys)
+
+	bs.forEach(b => {
+		b.position[0] -= x
+		b.position[1] -= y
+	})
+
+	b.childBlocks.push(...bs)
+	b.position = [x, y]
+
+	addBlock(b)
+}
+
+function unGroup() {
+	if (selectedBlocks.value.size === 0) return
+	if (!confirm("Are you sure?")) return
+
+	const bs = detachBlocks([...selectedBlocks.value])
+	bs.forEach(b => {
+		const [x, y] = b.position
+		b.childBlocks.forEach(cb => {
+			cb.position[0] += x
+			cb.position[1] += y
+			addBlock(cb)
+		})
+	})
+}
 </script>
 
 <template>
@@ -359,6 +404,8 @@ function draggingBlock(blockType) {
 		<a href="" class="btn" @click.prevent="save">Save</a>
 		<a href="#" class="btn" @click.prevent="deleteBlocks">Del Blocks</a>
 		<a href="" class="btn" @click.prevent="run">Run Selection</a>
+		<a href="" class="btn" @click.prevent="makeGroup">Make Group</a>
+		<a href="" class="btn" @click.prevent="unGroup">unGroup</a>
 		<a href="" class="btn" @click.prevent="resetCanvas">Reset</a>
 	</div>
 	<div class="editor-layer">
