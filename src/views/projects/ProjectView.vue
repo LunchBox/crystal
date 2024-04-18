@@ -275,9 +275,9 @@ function mouseup(e) {
 	selectBlocksInRange()
 
 	// snap
-	if (draggingBlocks.value) snapSelections()
-	draggingBlocks.value = false
-
+	// if (draggingBlocks.value) snapSelections()
+	
+  draggingBlocks.value = false
 
 	draggingCanvas.value = false
 
