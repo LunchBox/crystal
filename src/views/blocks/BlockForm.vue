@@ -71,7 +71,7 @@ function onTab(e) {
 				</label>
 			</div>
 
-			<div class="field">
+			<div v-if="!formData.noInputs" class="field">
 				<label>Args</label>
 				<div v-for="(input, idx) in formData.inputs" :key="input">
 					<input type="text" v-model="formData.inputs[idx].label" />
@@ -80,13 +80,13 @@ function onTab(e) {
 				<button @click.prevent="addInput">Add Input</button>
 			</div>
 
-			<div class="field">
+			<div v-if="!formData.noInputs" class="field">
 				<label>
 					<input type="checkbox" v-model="formData.namedArgs" /> use named args in function
 				</label>
 			</div>
 
-			<div class="field">
+			<div v-if="!formData.noOutputs" class="field">
 				<label>Outputs</label>
 				<div v-for="(output, outputIdx) in formData.outputs" :key="output">
 					<input type="text" v-model="formData.outputs[outputIdx].label" required />

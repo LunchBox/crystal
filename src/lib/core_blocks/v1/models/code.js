@@ -3,20 +3,13 @@ import Block from '@/models/block.js'
 export default class extends Block {
   constructor() {
     super()
-    // this._title = null
+
+    this.noInputs = true
+    this.noOutputs = true
+
     this.type = 'core_blocks/code'
     this.runnable = true
   }
-
-  // get title() {
-  //   if (this._title !== null) return this._title
-  //   if (this.content === null) return null
-  //   return this.content.split('\n').shift()
-  // }
-
-  // set title(val) {
-  //   this._title = val
-  // }
 
   dealWith(msgType, content) {
     super.dealWith(msgType, content)
@@ -31,13 +24,14 @@ export default class extends Block {
   }
 
   toCode() {
-    let text = this.content
-    this.inputs.forEach((inp) => {
-      if (!inp.source) return
-      console.log(inp.source)
-      const exp = new RegExp('\\${' + inp.label + '}', 'g')
-      text = text.replace(exp, inp.source)
-    })
-    return text
+    return this.content
+    // let text = this.content
+    // this.inputs.forEach((inp) => {
+    //   if (!inp.source) return
+    //   console.log(inp.source)
+    //   const exp = new RegExp('\\${' + inp.label + '}', 'g')
+    //   text = text.replace(exp, inp.source)
+    // })
+    // return text
   }
 }
