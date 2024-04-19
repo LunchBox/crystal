@@ -50,8 +50,11 @@ function mousedownOutput(output) {
 const width = ref('auto')
 const height = ref('auto')
 
-watch(props.block, () => {
+watch(() => props.block.width, () => {
   width.value = props.block.width
+}, {immediate: true})
+
+watch(() => props.block.height, () => {
   height.value = props.block.height
 }, {immediate: true})
 
@@ -171,10 +174,20 @@ function onResizeMarkMove(e) {
 
 	const scale = project.value.scale
 
-  let { width: w, height: h } = blockRef.value.getBoundingClientRect()
+
+  let w = parseFloat(width.value) || 0
+  let h = parseFloat(height.value) || 0
+
+  if (!width.value || width.value === 'auto' || !height.value || height.value === 'auto' ) {
+    let rect = blockRef.value.getBoundingClientRect()
+    w = rect.width
+    h = rect.height
+  }
 
   w += e.movementX / scale
   h += e.movementY / scale
+
+  console.log(w, h, e.movementX, e.movementY, scale)
 
   width.value = w + 'px'
   height.value = h + 'px'
