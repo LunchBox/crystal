@@ -27,18 +27,6 @@ export default class extends Block {
     this.runnable = true
   }
 
-  dealWith(msgType, content) {
-    super.dealWith(msgType, content)
-
-    if (msgType === 'execute_result') {
-      console.log('deal with: ')
-      console.log(content)
-      const text = content.data['text/plain']
-      const info = JSON.parse(eval(text))
-      console.log(info)
-    }
-  }
-
   toCode() {
     const exp = `getattr(${this.inputs[0].source}, ${this.inputs[1].source})`
     return `locals()['${this.id}_${this.outputs[0].id}'] = ${exp}`

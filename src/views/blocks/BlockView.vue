@@ -284,6 +284,8 @@ function resetSize() {
   min-width: min-content;
   min-height: min-content;
 
+  display: flex;
+  flex-direction: column;
 }
 
 .block.busy {
@@ -303,12 +305,15 @@ function resetSize() {
 	cursor: default;
 }
 
+.block-content {
+  flex: 1;
+}
+
 .block-io {
 	display: flex;
 	gap: 0 0.5rem;
 
   width: 100%;
-  height: 100%;
 }
 
 .block.selected {
@@ -393,8 +398,8 @@ pre {
 
 
 .resize-mark {
-  width: 10px;
-  height: 10px;
+  width: .5rem;
+  height: .5rem;
 
   position: absolute;
   right: 0;

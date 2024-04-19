@@ -24,18 +24,6 @@ export default class extends Block {
     this.runnable = true
   }
 
-  dealWith(msgType, content) {
-    super.dealWith(msgType, content)
-
-    if (msgType === 'execute_result') {
-      console.log('deal with: ')
-      console.log(content)
-      const text = content.data['text/plain']
-      const info = JSON.parse(eval(text))
-      console.log(info)
-    }
-  }
-
   toCode() {
     const [obj, attr, val] = this.inputs
     const exp = `setattr(${obj.source}, ${attr.source}, ${val.source})`
