@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
 const store = useProjectStore()
-const { selectedInput, selectedOutput, elPositions } = storeToRefs(store)
+const { project, selectedInput, selectedOutput, elPositions } = storeToRefs(store)
 const { connectIO, isBlockSelected, relativePos } = store
 
 const props = defineProps(['block'])
@@ -47,12 +47,21 @@ function mousedownOutput(output) {
 	}
 }
 
+const width = ref('auto')
+const height = ref('auto')
+
+watch(props.block, () => {
+  width.value = props.block.width
+  height.value = props.block.height
+}, {immediate: true})
+
 const bStyle = computed(() => {
 	const [x = 0, y = 0] = props.block.position
 	return {
 		left: `${x}px`,
 		top: `${y}px`,
-		// width: props.block.width || 'auto'
+    width: width.value,
+    height: height.value,
 	}
 })
 
@@ -118,23 +127,29 @@ const callback = function (mutationsList) {
 		}
 	}
 }
+
 const observer = new MutationObserver(callback)
 
-// function storeWidth() {
-// 	props.block.width = blockRef.value.style.width
-// }
 
 onMounted(() => {
 	updatePositions()
 
 	window.addEventListener('resize', updatePositions)
 	// window.addEventListener('mouseup', storeWidth)
+
+	window.addEventListener('mousemove', onResizeMarkMove)
+	window.addEventListener('mouseup', releaseResizeMark)
+
 	observer.observe(blockRef.value, config)
 })
 
 onBeforeUnmount(() => {
 	window.removeEventListener('resize', updatePositions)
 	// window.removeEventListener('mouseup', storeWidth)
+
+	window.removeEventListener('mousemove', onResizeMarkMove)
+	window.removeEventListener('mouseup', releaseResizeMark)
+
 	observer.disconnect()
 })
 
@@ -146,6 +161,30 @@ function mousedownOnBlock(e) {
 	}
 }
 
+const resizing = ref(false)
+function mousedownOnResizeMark(e) {
+  resizing.value = true
+}
+
+function onResizeMarkMove(e) {
+  if (!resizing.value) return
+
+	const scale = project.value.scale
+
+  let { width: w, height: h } = blockRef.value.getBoundingClientRect()
+
+  w += e.movementX / scale
+  h += e.movementY / scale
+
+  width.value = w + 'px'
+  height.value = h + 'px'
+}
+
+function releaseResizeMark() {
+  resizing.value = false
+
+  props.block.updateSize(width.value, height.value)
+}
 
 </script>
 
@@ -205,6 +244,8 @@ function mousedownOnBlock(e) {
 				</div>
 			</div>
 		</div>
+
+    <span class='resize-mark' @mousedown.prevent.stop='mousedownOnResizeMark'></span>
 	</div>
 </template>
 
@@ -216,11 +257,9 @@ function mousedownOnBlock(e) {
 	border: 2px solid rgba(0, 0, 0, 0.2);
 	border-radius: 3px;
 
-	max-width: 300px;
-
-	/* min-width: min-content; */
-	/* resize: horizontal; */
-	/* overflow: auto; */
+  width: auto;
+  min-width: min-content;
+  min-height: min-content;
 }
 
 .block.busy {
@@ -325,5 +364,17 @@ pre {
 	/* Opera 7 */
 	word-wrap: break-word;
 	/* Internet Explorer 5.5+ */
+}
+
+
+.resize-mark {
+  width: 10px;
+  height: 10px;
+
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  cursor: nwse-resize;
 }
 </style>

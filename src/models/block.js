@@ -10,7 +10,9 @@ export default class Block extends Base {
   constructor() {
     super()
     this.title = 'Block Name'
-    // this.width = null
+
+    this.width = 'auto'
+    this.height = 'auto'
 
     this.type = 'block'
 
@@ -64,6 +66,11 @@ export default class Block extends Base {
     this.outputs = this.outputs.map((attr) => {
       return new BlockOutput().load(attr)
     })
+  }
+
+  updateSize(w, h) {
+    this.width = w
+    this.height = h
   }
 
   addInput(label = 'arg') {
