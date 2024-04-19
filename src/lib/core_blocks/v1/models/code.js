@@ -4,6 +4,8 @@ export default class extends Block {
   constructor() {
     super()
 
+    this.title = 'Code Block'
+
     this.noInputs = true
     this.noOutputs = true
 

@@ -186,6 +186,12 @@ function releaseResizeMark() {
   props.block.updateSize(width.value, height.value)
 }
 
+function resetSize() {
+  width.value = 'auto'
+  height.value = 'auto'
+  props.block.updateSize(width.value, height.value)
+}
+
 </script>
 
 <template>
@@ -203,36 +209,39 @@ function releaseResizeMark() {
 			</template>
 		</div>
 		<div class="block-content">
-			<div class="block-inputs">
-				<div class="block-input" v-for="input in block.inputs" :key="input.id">
-					<span :ref="(el) => (elRefs[`${block.id}_${input.id}_i`] = el)" class="indicator input"
-						:class="{ active: isArgSelected(input), occupied: isOccupied(input) }" :title="input.source"
-						@mousedown.prevent="mousedownInput(input)" @dblclick.prevent="clearArg(input)"></span>
-					<span>{{ input.label }}</span>
-				</div>
+      <div class="block-io">
+        <div class="block-inputs">
+          <div class="block-input" v-for="input in block.inputs" :key="input.id">
+            <span :ref="(el) => (elRefs[`${block.id}_${input.id}_i`] = el)" class="indicator input"
+              :class="{ active: isArgSelected(input), occupied: isOccupied(input) }" :title="input.source"
+              @mousedown.prevent="mousedownInput(input)" @dblclick.prevent="clearArg(input)"></span>
+            <span>{{ input.label }}</span>
+          </div>
+        </div>
+        <div class="block-outputs">
+          <div class="block-output" v-for="output in block.outputs" :key="output.id">
+            <span :title="output.value">{{ output.label }}</span>
+
+            <input v-if="output.type === 'string'" type="text" v-model="output.value" />
+
+            <input v-else-if="INPUT_TYPES.includes(output.type)" :type="output.type" v-model="output.value" />
+
+            <textarea v-else-if="output.type === 'text'" type="text" v-model="output.value"></textarea>
+
+            <select v-else-if="output.type === 'select'" v-model="output.value">
+              <option></option>
+              <option v-for="opt in output.options" :key="opt" :value="opt">{{ opt }}</option>
+            </select>
+
+            <span :ref="(el) => (elRefs[`${block.id}_${output.id}_o`] = el)" class="indicator output"
+              :class="{ active: isOutputSelected(output) }" @mousedown.prevent="mousedownOutput(output)"></span>
+          </div>
+        </div>
 			</div>
-			<div class="block-outputs">
-				<div class="block-output" v-for="output in block.outputs" :key="output.id">
-					<span :title="output.value">{{ output.label }}</span>
 
-					<input v-if="output.type === 'string'" type="text" v-model="output.value" />
-
-					<input v-else-if="INPUT_TYPES.includes(output.type)" :type="output.type" v-model="output.value" />
-
-					<textarea v-else-if="output.type === 'text'" type="text" v-model="output.value"></textarea>
-
-					<select v-else-if="output.type === 'select'" v-model="output.value">
-						<option></option>
-						<option v-for="opt in output.options" :key="opt" :value="opt">{{ opt }}</option>
-					</select>
-
-					<span :ref="(el) => (elRefs[`${block.id}_${output.id}_o`] = el)" class="indicator output"
-						:class="{ active: isOutputSelected(output) }" @mousedown.prevent="mousedownOutput(output)"></span>
-				</div>
-			</div>
+      <slot></slot>
 		</div>
 
-		<slot></slot>
 
 		<div class="block-extra">
 			<div>
@@ -245,7 +254,7 @@ function releaseResizeMark() {
 			</div>
 		</div>
 
-    <span class='resize-mark' @mousedown.prevent.stop='mousedownOnResizeMark'></span>
+    <span class='resize-mark' @mousedown.prevent.stop='mousedownOnResizeMark' @dblclick="resetSize"></span>
 	</div>
 </template>
 
@@ -259,7 +268,7 @@ function releaseResizeMark() {
 
   width: auto;
   min-width: min-content;
-  min-height: min-content;
+  min-height: fit-content;
 }
 
 .block.busy {
@@ -279,11 +288,12 @@ function releaseResizeMark() {
 	cursor: default;
 }
 
-.block-content {
+.block-io {
 	display: flex;
 	gap: 0 0.5rem;
 
-
+  width: 100%;
+  height: 100%;
 }
 
 .block.selected {
