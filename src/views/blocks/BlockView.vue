@@ -65,6 +65,7 @@ const bStyle = computed(() => {
 		top: `${y}px`,
     width: width.value,
     height: height.value,
+    maxWidth: (!width.value || width.value === 'auto') ? '640px' : 'none'
 	}
 })
 
@@ -281,7 +282,8 @@ function resetSize() {
 
   width: auto;
   min-width: min-content;
-  min-height: fit-content;
+  min-height: min-content;
+
 }
 
 .block.busy {

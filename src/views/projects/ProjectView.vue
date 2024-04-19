@@ -119,6 +119,8 @@ const canvasStyle = computed(() => {
 	return {
 		top: y + 'px',
 		left: x + 'px',
+    width: `calc(${Math.abs(x)}px + 200vw)`,
+    height: `calc(${Math.abs(y)}px + 200vh)`,
 		transform: `scale(${scale}, ${scale})`
 	}
 })
