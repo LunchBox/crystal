@@ -21,13 +21,13 @@ export default class Block extends Base {
 
     this.position = [100, 100]
 
-    this.func = null
+    // this.func = null
     this.namedArgs = false
 
     this.content = null
     this.runnable = true
 
-    this.code = null
+    // this.code = null
 
     this.seq = 0
 
@@ -120,39 +120,41 @@ export default class Block extends Base {
     }
   }
 
-  fFunc() {
-    if (!this.func) return 'None'
+  // fFunc() {
+  //   if (!this.func) return 'None'
 
-    let inputs = []
-    if (this.namedArgs) {
-      const sInputs = this.inputs.filter((inp) => inp.source !== null && inp.source !== undefined)
-      inputs = sInputs.map((inp) => `${inp.label} = ${inp.source}`)
-    } else {
-      inputs = this.inputs.map((inp) => (inp.source ? inp.source : 'None'))
-    }
-    return `${this.func}(${inputs.join(', ')})`
-  }
+  //   let inputs = []
+  //   if (this.namedArgs) {
+  //     const sInputs = this.inputs.filter((inp) => inp.source !== null && inp.source !== undefined)
+  //     inputs = sInputs.map((inp) => `${inp.label} = ${inp.source}`)
+  //   } else {
+  //     inputs = this.inputs.map((inp) => (inp.source ? inp.source : 'None'))
+  //   }
+  //   return `${this.func}(${inputs.join(', ')})`
+  // }
 
   toCode() {
-    if (this.inputs.length === 0 && this.outputs.length === 0) {
-      return this.code
-    }
+    return 'None'
 
-    const funcStr = this.fFunc()
-    if (this.outputs.length === 0) {
-      return funcStr
-    }
+    // if (this.inputs.length === 0 && this.outputs.length === 0) {
+    //   return this.code
+    // }
 
-    const outputs = this.outputs.map((output) => {
-      let exp = 'None'
-      if (output.type === 'res') {
-        exp = funcStr
-      } else {
-        exp = this.fVal(output)
-      }
-      return `locals()['${this.id}_${output.id}'] = ${exp}`
-    })
-    return outputs.join('\r\n')
+    // const funcStr = this.fFunc()
+    // if (this.outputs.length === 0) {
+    //   return funcStr
+    // }
+
+    // const outputs = this.outputs.map((output) => {
+    //   let exp = 'None'
+    //   if (output.type === 'res') {
+    //     exp = funcStr
+    //   } else {
+    //     exp = this.fVal(output)
+    //   }
+    //   return `locals()['${this.id}_${output.id}'] = ${exp}`
+    // })
+    // return outputs.join('\r\n')
   }
 }
 

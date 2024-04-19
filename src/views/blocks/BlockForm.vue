@@ -107,7 +107,7 @@ function onTab(e) {
 				<button @click.prevent="addOutput">Add Output</button>
 			</div>
 
-			<div v-if="!formData.hardcode">
+			<div v-if="!formData.noContent">
 				<label>
 					<span>Content</span>
 					<textarea v-model="formData.content" @keydown.tab.prevent.stop="onTab"></textarea>

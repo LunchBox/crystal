@@ -18,7 +18,7 @@ export default class extends Block {
     this.noInputs = true
     this.noOutputs = true
 
-    this.hardcode = true
+    this.noContent = true
 
     this.type = 'core_blocks/set_attr'
     this.runnable = true
