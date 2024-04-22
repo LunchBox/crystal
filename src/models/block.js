@@ -63,8 +63,31 @@ export default class Block extends Base {
   }
 
   afterLoad() {
+    this.inputs = this.inputs.map((attr) => {
+      return new BlockInput().load(attr)
+    })
+
     this.outputs = this.outputs.map((attr) => {
       return new BlockOutput().load(attr)
+    })
+  }
+
+  rebuildInputsFromBMap(blockMap) {
+    this.inputs.forEach(inp => {
+      if (!inp.source) return 
+
+      const [bid, oid] = inp.source.split('_')
+      const tb = blockMap[bid]
+      if (tb) {
+        const out = tb.outputs.filter(op => op.id === oid)[0]
+        if (out) {
+          inp._sourceObj = out
+          return 
+        }
+      }
+
+      // target block not found, i/o broken, remove source
+      inp.source = null
     })
   }
 
@@ -79,7 +102,7 @@ export default class Block extends Base {
 
   setInput(inputId, block, output) {
     const input = this.inputs.find((inp) => inp.id === inputId)
-    input.source = [block.id, output.id].join('_')
+    input.setSource(block, output)
   }
 
   delInput(idx) {
@@ -115,8 +138,12 @@ export default class Block extends Base {
     const val = output.value
     if (output.type === 'number') {
       return `${val ? val : 0}`
+    } else if (['stdout', 'stderr'].includes(output.type)) {
+      const s = this[output.type] || ""
+      const es = s.replace('\'', '\\\'')
+      return `'''${es}'''`
     } else {
-      return `'${val ? val : ''}'`
+      return `'''${val ? val : ''}'''`
     }
   }
 

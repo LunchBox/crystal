@@ -16,6 +16,7 @@ export default class Project extends Base {
   }
 
   afterLoad() {
+    // 用指定的 model 來承載數據
     const convert = (attrs) => {
       const constructor = CoreBlocks[attrs.type] || Block
       const b = new constructor().load(attrs)
@@ -26,5 +27,11 @@ export default class Project extends Base {
     }
 
     this.blocks = this.blocks.map(convert)
+
+    // rebuild inputs
+    const blockMap = Object.fromEntries(this.blocks.map(b => [b.id, b]))
+    this.blocks.forEach(b => {
+      b.rebuildInputsFromBMap(blockMap)
+    })
   }
 }

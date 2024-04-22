@@ -41,6 +41,8 @@ socket.on('reg_msg', (msg) => {
 })
 
 function runCode(code, subscriber) {
+  console.log(code)
+
   const exchangeId = uuidv4()
   subscribe(exchangeId, subscriber)
 

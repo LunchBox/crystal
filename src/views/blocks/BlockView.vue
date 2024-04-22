@@ -206,6 +206,7 @@ function resetSize() {
   props.block.updateSize(width.value, height.value)
 }
 
+
 </script>
 
 <template>
@@ -236,6 +237,8 @@ function resetSize() {
           <div class="block-output" v-for="output in block.outputs" :key="output.id">
             <span :title="output.value">{{ output.label }}</span>
 
+            {{ output.computedOptions }}
+
             <input v-if="output.type === 'string'" type="text" v-model="output.value" />
 
             <input v-else-if="INPUT_TYPES.includes(output.type)" :type="output.type" v-model="output.value" />
@@ -244,7 +247,7 @@ function resetSize() {
 
             <select v-else-if="output.type === 'select'" v-model="output.value">
               <option></option>
-              <option v-for="opt in output.options" :key="opt" :value="opt">{{ opt }}</option>
+              <option v-for="opt in output.getOptions()" :key="opt" :value="opt">{{ opt }}</option>
             </select>
 
             <span :ref="(el) => (elRefs[`${block.id}_${output.id}_o`] = el)" class="indicator output"
@@ -314,6 +317,7 @@ function resetSize() {
 	gap: 0 0.5rem;
 
   width: 100%;
+  height: 100%;
 }
 
 .block.selected {
@@ -322,12 +326,24 @@ function resetSize() {
 
 .block-outputs {
 	margin-left: auto;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.block-output {
+  flex: 1;
+}
+
+.block-output textarea {
+  display: block;
+  height: 100%;
 }
 
 .block-input,
 .block-output {
 	display: flex;
-	align-items: center;
+	align-items: baseline;
 	gap: 0 0.25rem;
 	padding: 1px 0.25rem;
 }
@@ -371,6 +387,7 @@ textarea {
 	padding-top: 4px;
 	padding-bottom: 4px;
 }
+
 
 .block-extra {
 	position: relative;
