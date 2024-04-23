@@ -11,6 +11,6 @@ export default class InputConfig extends Base {
 
   setSource(block, output) {
     this.source = [block.id, output.id].join('_')
-    this._sourceObj = otuput
+    this._sourceObj = output
   }
 }

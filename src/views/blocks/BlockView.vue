@@ -7,6 +7,9 @@ import { runBlock } from '@/socket.js'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '@/stores/project.js'
 
+import BlockInput from './BlockInput.vue'
+import BlockOutput from './BlockOutput.vue'
+
 const store = useProjectStore()
 const { project, selectedInput, selectedOutput, elPositions } = storeToRefs(store)
 const { connectIO, isBlockSelected, relativePos } = store
@@ -14,38 +17,6 @@ const { connectIO, isBlockSelected, relativePos } = store
 const props = defineProps(['block'])
 
 const emit = defineEmits(['edit', 'mousedown-on-block'])
-
-// TODO: it changed the props data...
-function clearArg(input) {
-	input.source = null
-}
-
-function mousedownInput(input) {
-	if (selectedInput.value) {
-		const [block, _input] = selectedInput.value
-		if (block === props.block && input === _input) {
-			selectedInput.value = null
-		} else {
-			selectedInput.value = [props.block, input]
-		}
-	} else {
-		selectedInput.value = [props.block, input]
-		connectIO()
-	}
-}
-function mousedownOutput(output) {
-	if (selectedOutput.value) {
-		const [block, _output] = selectedOutput.value
-		if (block === props.block && output === _output) {
-			selectedOutput.value = null
-		} else {
-			selectedOutput.value = [props.block, output]
-		}
-	} else {
-		selectedOutput.value = [props.block, output]
-		connectIO()
-	}
-}
 
 const width = ref('auto')
 const height = ref('auto')
@@ -73,21 +44,6 @@ const bClass = computed(() => {
 	return [{ selected: isBlockSelected(props.block) }, props.block.status]
 })
 
-function isArgSelected(input) {
-	if (!selectedInput.value) return false
-	const [block, _input] = selectedInput.value
-	return block === props.block && input === _input
-}
-
-function isOutputSelected(output) {
-	if (!selectedOutput.value) return false
-	const [block, _output] = selectedOutput.value
-	return block === props.block && output === _output
-}
-
-function isOccupied(input) {
-	return input.source
-}
 
 function run() {
 	runBlock(props.block)
@@ -96,6 +52,16 @@ function run() {
 // ------------- io positions
 const blockRef = ref(null)
 const elRefs = ref({})
+
+
+function regOutputEl(output, el) {
+  elRefs.value[`${props.block.id}_${output.id}_o`] = el
+}
+
+function regInputEl(input, el) {
+  elRefs.value[`${props.block.id}_${input.id}_i`] = el
+}
+
 
 let updating = false
 function updatePositions() {
@@ -226,33 +192,10 @@ function resetSize() {
 		<div class="block-content">
       <div class="block-io">
         <div class="block-inputs">
-          <div class="block-input" v-for="input in block.inputs" :key="input.id">
-            <span :ref="(el) => (elRefs[`${block.id}_${input.id}_i`] = el)" class="indicator input"
-              :class="{ active: isArgSelected(input), occupied: isOccupied(input) }" :title="input.source"
-              @mousedown.prevent="mousedownInput(input)" @dblclick.prevent="clearArg(input)"></span>
-            <span>{{ input.label }}</span>
-          </div>
+          <block-input :block="block" :input="input" v-for="input in block.inputs" :key="input.id" @reg-ref="(el) => regInputEl(input, el)"></block-input>
         </div>
         <div class="block-outputs">
-          <div class="block-output" v-for="output in block.outputs" :key="output.id">
-            <span :title="output.value">{{ output.label }}</span>
-
-            {{ output.computedOptions }}
-
-            <input v-if="output.type === 'string'" type="text" v-model="output.value" />
-
-            <input v-else-if="INPUT_TYPES.includes(output.type)" :type="output.type" v-model="output.value" />
-
-            <textarea v-else-if="output.type === 'text'" type="text" v-model="output.value"></textarea>
-
-            <select v-else-if="output.type === 'select'" v-model="output.value">
-              <option></option>
-              <option v-for="opt in output.getOptions()" :key="opt" :value="opt">{{ opt }}</option>
-            </select>
-
-            <span :ref="(el) => (elRefs[`${block.id}_${output.id}_o`] = el)" class="indicator output"
-              :class="{ active: isOutputSelected(output) }" @mousedown.prevent="mousedownOutput(output)"></span>
-          </div>
+          <block-output :block="block" :output="output" v-for="output in block.outputs" :key="output.id" @reg-ref="(el) => regOutputEl(output, el)"></block-output>
         </div>
 			</div>
 
@@ -357,45 +300,23 @@ function resetSize() {
 	color: red;
 }
 
-.indicator {
+:deep() .indicator {
 	display: block;
 	width: 8px;
 	height: 8px;
 	background: #ccc;
 }
 
-.indicator.occupied {
+:deep() .indicator.occupied {
 	background: gray;
 }
 
-.indicator.active {
+:deep() .indicator.active {
 	background: orange;
 }
 
 pre {
 	font-size: 0.625rem;
-}
-
-input,
-select,
-textarea {
-	background: #efefef;
-	border: none;
-	box-sizing: border-box;
-	display: inline-block;
-	margin: 2px;
-	padding-top: 4px;
-	padding-bottom: 4px;
-}
-
-
-.block-extra {
-	position: relative;
-}
-
-.block-extra>* {
-	position: absolute;
-	top: 1rem;
 }
 
 pre {
@@ -413,6 +334,15 @@ pre {
 	/* Internet Explorer 5.5+ */
 }
 
+
+.block-extra {
+	position: relative;
+}
+
+.block-extra>* {
+	position: absolute;
+	top: 1rem;
+}
 
 .resize-mark {
   width: .5rem;

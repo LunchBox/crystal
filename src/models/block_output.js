@@ -33,7 +33,7 @@ import { computed } from 'vue'
 export default class BlockOutput extends Base {
   constructor({ label = 'res', type = 'res' } = {}) {
     super()
-    console.log(label, type)
+
     this.label = label
     this.type = type
     this.defaultValue = null
@@ -45,8 +45,4 @@ export default class BlockOutput extends Base {
     this._inputs = []
   }
 
-  // do not call options directly
-  getOptions() {
-    return this.options
-  }
 }
