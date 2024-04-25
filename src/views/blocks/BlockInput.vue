@@ -44,9 +44,14 @@ function mousedownInput(input) {
 
 <template>
   <div class="block-input">
-    <span :ref="(el) => $emit('reg-ref', el)" class="indicator input"
-      :class="{ active: isArgSelected(input), occupied: isOccupied(input) }" :title="input.source" @mousedown.prevent="mousedownInput(input)"></span>
-    <span @mousedown.prevent="mousedownInput(input)" @dblclick.prevent="clearArg(input)">{{ input.label }}</span>
+    <span 
+       class="indicator input"
+       :ref="(el) => $emit('reg-ref', el)" 
+       :class="{ active: isArgSelected(input), occupied: isOccupied(input) }" 
+       :title="input.source" 
+       @mousedown.prevent="mousedownInput(input)"
+       @dblclick.prevent="clearArg(input)"></span>
+    <span class="label">{{ input.label }}</span>
   </div>
 </template>
 

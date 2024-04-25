@@ -47,7 +47,7 @@ const options = computed(() => {
 
 <template>
   <div class="block-output">
-    <span :title="output.value" @mousedown.prevent="mousedownOutput(output)">{{ output.label }}</span>
+    <span class="label" :title="output.value">{{ output.label }}</span>
 
     {{ output.computedOptions }}
 
@@ -62,7 +62,12 @@ const options = computed(() => {
       <option v-for="opt in options" :key="opt" :value="opt">{{ opt }}</option>
     </select>
 
-    <span :ref="el => $emit('reg-ref', el)" class="indicator output" :class="{ active: isOutputSelected(output) }" @mousedown.prevent="mousedownOutput(output)"></span>
+    <span 
+      class="indicator output" 
+      :ref="el => $emit('reg-ref', el)" 
+      :class="{ active: isOutputSelected(output) }" 
+      @mousedown.prevent="mousedownOutput(output)">
+    </span>
   </div>
 </template>
 

@@ -10,7 +10,7 @@ export default class extends Block {
     const input = new BlockInput({ label: 'kvObj' })
     this.inputs = [ input ]
 
-    const output = new BlockOutput({ label: 'res', type: 'select' })
+    const output = new BlockOutput({ label: 'res' })
     this.outputs = [ output ]
 
     // not allow to change I/O
@@ -21,6 +21,12 @@ export default class extends Block {
     this.runnable = true
   }
 
-  // watch inputs
+  toCode() {
+    const outputs = this.outputs.map((output) => {
+      const exp = this.fVal(output)
+      return `locals()['${this.id}_${output.id}'] = ${exp}`
+    })
 
+    return outputs.join("\n")
+  }
 }
