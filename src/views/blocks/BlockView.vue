@@ -172,6 +172,9 @@ function resetSize() {
   props.block.updateSize(width.value, height.value)
 }
 
+const hasInputs = computed(() => props.block.inputs && props.block.inputs.length > 0)
+const hasOutputs = computed(() => props.block.outputs && props.block.outputs.length > 0)
+
 
 </script>
 
@@ -190,11 +193,11 @@ function resetSize() {
 			</template>
 		</div>
 		<div class="block-content">
-      <div class="block-io">
-        <div class="block-inputs">
+      <div v-if="hasInputs || hasOutputs" class="block-io">
+        <div v-if="hasInputs" class="block-inputs">
           <block-input :block="block" :input="input" v-for="input in block.inputs" :key="input.id" @reg-ref="(el) => regInputEl(input, el)"></block-input>
         </div>
-        <div class="block-outputs">
+        <div v-if="hasOutputs" class="block-outputs">
           <block-output :block="block" :output="output" v-for="output in block.outputs" :key="output.id" @reg-ref="(el) => regOutputEl(output, el)"></block-output>
         </div>
 			</div>
