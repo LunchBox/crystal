@@ -49,3 +49,12 @@ function mousedownInput(input) {
     <span @mousedown.prevent="mousedownInput(input)" @dblclick.prevent="clearArg(input)">{{ input.label }}</span>
   </div>
 </template>
+
+<style scoped>
+.block-input {
+	display: flex;
+	align-items: baseline;
+	gap: 0 0.25rem;
+  padding: 0;
+}
+</style>

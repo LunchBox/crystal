@@ -82,10 +82,8 @@ const options = computed(() => {
 	display: flex;
 	align-items: baseline;
 	gap: 0 0.25rem;
-	padding: 1px 0.25rem;
-}
+  padding: 0;
 
-.block-output {
 	text-align: right;
 	justify-content: flex-end;
 }

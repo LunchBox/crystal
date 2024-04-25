@@ -274,28 +274,6 @@ function resetSize() {
   flex-direction: column;
 }
 
-.block-output {
-  flex: 1;
-}
-
-.block-output textarea {
-  display: block;
-  height: 100%;
-}
-
-.block-input,
-.block-output {
-	display: flex;
-	align-items: baseline;
-	gap: 0 0.25rem;
-	padding: 1px 0.25rem;
-}
-
-.block-output {
-	text-align: right;
-	justify-content: flex-end;
-}
-
 .block-stderr {
 	color: red;
 }
