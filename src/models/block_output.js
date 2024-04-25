@@ -40,6 +40,9 @@ export default class BlockOutput extends Base {
 
     this.options = []
 
+    // 目前 server 上的執行結果都存在 server 上，並不會將內容 output 出來放在前端的 output 裡
+    // 所以這裡的 value 主要是一些可以存在前端的數據
+    // 或者一些前端的 input widget
     this.value = null
 
     this._inputs = []

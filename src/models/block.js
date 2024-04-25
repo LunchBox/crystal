@@ -117,11 +117,11 @@ export default class Block extends Base {
     this.outputs.splice(idx, 1)
   }
 
-  // TODO: should not be that simple
-  setOutputValue(label, val) {
-    const output = this.outputs.find((out) => out.label === label)
-    output.value = val
-  }
+  // // TODO: should not be that simple
+  // setOutputValue(label, val) {
+  //   const output = this.outputs.find((out) => out.label === label)
+  //   output.value = val
+  // }
 
   delOutputOption(outputIdx, optIdx) {
     this.outputs[outputIdx].options.splice(optIdx, 1)
@@ -129,7 +129,8 @@ export default class Block extends Base {
 
   resetOutputs() {
     const list = ['res']
-    this.outputs.filter((out) => list.includes(out.type)).forEach((out) => (out.value = null))
+    
+    // this.outputs.filter((out) => list.includes(out.type)).forEach((out) => (out.value = null))
     this.stderr = null
     this.stdout = null
   }

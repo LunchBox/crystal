@@ -18,7 +18,7 @@ function updateOutput(el) {
 
 <template>
   <BlockView :block="block">
-  <select @change="updateOutput">
+  <select v-model="output.value" v-if='output'>
     <option></option>
     <option v-for="opt in options" :key="opt" :value="opt">{{ opt }}</option>
   </select>
